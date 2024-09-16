@@ -7,7 +7,7 @@ import 'package:rxdart/src/utils/notification.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:rxdart/transformers.dart';
 
-typedef JointFn<Event, State> = State? Function(Event, State);
+typedef JointFn<Event, State> = FutureOr<State?> Function(Event, State);
 
 class Joint<Event, State> implements BehaviorSubject<State> {
   final BehaviorSubject<State> _states; // in/out
@@ -44,10 +44,7 @@ class Joint<Event, State> implements BehaviorSubject<State> {
 
   /// Remits the last emitted value
   void reEmit() {
-    final val = _states.valueOrNull;
-    if (val == null) {
-      return;
-    }
+    final val = _states.value;
     _states.add(val);
   }
 
@@ -55,12 +52,12 @@ class Joint<Event, State> implements BehaviorSubject<State> {
     if (_transformSub != null) {
       _transformSub!.cancel();
     }
-    final transform = _events.expand<State>((event) {
-      final newData = jointFn(event, _states.value);
+    final transform = _events.flatMap<State>((event) async* {
+      final newData = await jointFn(event, _states.value);
       if (newData == null) {
-        return [];
+        return;
       }
-      return [newData];
+      yield newData;
     });
     _transformSub = transform.listen((data) {
       _states.add(data);
@@ -78,6 +75,8 @@ class Joint<Event, State> implements BehaviorSubject<State> {
     additionalEventListeners.add(sub);
   }
 
+  /// Adds an event. Note an event is not immediately processed. You need to yield to the scheduler since
+  /// `handleEvents` functions is allowed to be async.
   void addEvent(Event event) {
     _events.add(event);
   }
