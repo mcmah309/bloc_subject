@@ -5,326 +5,368 @@ import 'dart:async';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:rxdart/transformers.dart';
 
-class Pipe<T> implements BehaviorSubject<T> {
-  late final BehaviorSubject<T> _behavior;
-  final Map<Pipe<T>, StreamSubscription<T>> _subscriptions = {};
+typedef JointFn<Event, State> = State? Function(Event, State);
 
-  Pipe._(Stream<T> stream, T? initial) {
-    if (stream is Subject) {
-      // todo
-    } else {
-      //todo
+class Joint<Event, State> implements BehaviorSubject<State> {
+  final BehaviorSubject<State> _states; // in/out
+  final BehaviorSubject<Event> _events = BehaviorSubject(); // in, all events get added here
+  Set<StreamSubscription<Event>> additionalEventListeners = {};
+  StreamSubscription<State>? _transformSub;
+
+  Joint._(this._states, JointFn<Event, State>? jointFn) {
+    if (!_states.hasValue) {
+      // todo check if need to yield?
+      throw Exception("State must have initial value");
     }
-    if (initial == null) {
-      _behavior = BehaviorSubject();
-    } else {
-      _behavior = BehaviorSubject.seeded(initial);
+    if (jointFn != null) {
+      handleEvents(jointFn);
     }
   }
 
-  factory Pipe.fromStream(Stream<T> stream, {T? initial}) => Pipe._();
+  factory Joint.fromStream(Stream<State> stream, [JointFn<Event, State>? jointFn]) {
+    final BehaviorSubject<State> behavior = BehaviorSubject();
+    behavior.addStream(stream);
+    return Joint._(behavior, jointFn);
+  }
+
+  factory Joint.fromBehavior(BehaviorSubject<State> behavior, [JointFn<Event, State>? jointFn]) {
+    return Joint._(behavior, jointFn);
+  }
+
+  factory Joint.fromValue(State val, [JointFn<Event, State>? jointFn]) {
+    final BehaviorSubject<State> behavior = BehaviorSubject.seeded(val);
+    return Joint._(behavior, jointFn);
+  }
 
   //************************************************************************//
 
-  void attach(Pipe<T> pipe) {
-    if (_subscriptions.containsKey(pipe)) {
-      return;
-    }
-    final sub = pipe._behavior.listen((data) {
-      // For edge case, allows not having to await `sub.cancel`
-      if (_subscriptions[pipe] == null) {
-        return;
-      }
-      _behavior.add(data);
-    }, onError: (Object error, StackTrace stackTrace) {
-      // For edge case, allows not having to await `sub.cancel`
-      if (_subscriptions[pipe] == null) {
-        return;
-      }
-      _behavior.addError(error, stackTrace);
-    });
-    _subscriptions[pipe] = sub;
-  }
-
-  void detach(Pipe<T> pipe) {
-    final sub = _subscriptions[pipe];
-    if (sub == null) {
-      return;
-    }
-    sub.cancel();
-    _subscriptions.remove(pipe);
-  }
-
-  /// Remits the last value
+  /// Remits the last emitted value
   void reEmit() {
-    final val = _behavior.valueOrNull;
+    final val = _states.valueOrNull;
     if (val == null) {
       return;
     }
-    _behavior.add(val);
+    _states.add(val);
+  }
+
+  void handleEvents(JointFn<Event, State> jointFn) {
+    if (_transformSub != null) {
+      _transformSub!.cancel();
+    }
+    final transform = _events.expand<State>((event) {
+      final newData = jointFn(event, _states.value);
+      if (newData == null) {
+        return [];
+      }
+      return [newData];
+    });
+    _transformSub = transform.listen((data) {
+      _states.add(data);
+    }, onError: (Object error, StackTrace stackTrace) {
+      _states.addError(error, stackTrace);
+    }, onDone: () {
+      _states.close();
+    });
+  }
+
+  void listenToEvents(Stream<Event> events) {
+    final sub = events.listen((event) {
+      addEvent(event);
+    });
+    additionalEventListeners.add(sub);
+  }
+
+  void addEvent(Event event) {
+    _events.add(event);
   }
 
   // BehaviorSubject
   //************************************************************************//
 
   @override
-  ControllerCancelCallback? get onCancel => _behavior.onCancel;
+  ControllerCancelCallback? get onCancel => _states.onCancel;
 
   @override
-  ControllerCallback? get onListen => _behavior.onListen;
+  ControllerCallback? get onListen => _states.onListen;
 
   @override
-  ControllerCallback get onPause => _behavior.onPause;
+  ControllerCallback get onPause => _states.onPause;
 
   @override
-  ControllerCallback get onResume => _behavior.onResume;
+  ControllerCallback get onResume => _states.onResume;
 
   @override
-  T get value => _behavior.value;
+  State get value => _states.value;
 
   @override
-  void add(T event) {
-    _behavior.add(event);
+  set onCancel(ControllerCancelCallback? onCancelHandler) {
+    _states.onCancel = onCancelHandler;
+  }
+
+  @override
+  set onListen(void Function()? onListenHandler) {
+    _states.onListen = onListenHandler;
+  }
+
+  @override
+  set onPause(void Function()? onPauseHandler) {
+    _states.onPause = onPauseHandler;
+  }
+
+  @override
+  set onResume(void Function()? onResumeHandler) {
+    _states.onResume = onResumeHandler;
+  }
+
+  @override
+  set value(State newValue) {
+    _states.value = newValue;
+  }
+
+  @override
+  void add(State event) {
+    _states.add(event);
   }
 
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
-    _behavior.addError(error, stackTrace);
+    _states.addError(error, stackTrace);
   }
 
   @override
-  Future<void> addStream(Stream<T> source, {bool? cancelOnError}) {
-    return _behavior.addStream(source, cancelOnError: cancelOnError);
+  Future<void> addStream(Stream<State> source, {bool? cancelOnError}) {
+    return _states.addStream(source, cancelOnError: cancelOnError);
   }
 
   @override
-  Future<bool> any(bool Function(T element) test) {
-    return _behavior.any(test);
+  Future<bool> any(bool Function(State element) test) {
+    return _states.any(test);
   }
 
   @override
-  Stream<T> asBroadcastStream(
-      {void Function(StreamSubscription<T> subscription)? onListen,
-      void Function(StreamSubscription<T> subscription)? onCancel}) {
-    return _behavior.asBroadcastStream(onListen: onListen, onCancel: onCancel);
+  Stream<State> asBroadcastStream(
+      {void Function(StreamSubscription<State> subscription)? onListen,
+      void Function(StreamSubscription<State> subscription)? onCancel}) {
+    return _states.asBroadcastStream(onListen: onListen, onCancel: onCancel);
   }
 
   @override
-  Stream<E> asyncExpand<E>(Stream<E>? Function(T event) convert) {
-    return _behavior.asyncExpand(convert);
+  Stream<E> asyncExpand<E>(Stream<E>? Function(State event) convert) {
+    return _states.asyncExpand(convert);
   }
 
   @override
-  Stream<E> asyncMap<E>(FutureOr<E> Function(T event) convert) {
-    return _behavior.asyncMap(convert);
+  Stream<E> asyncMap<E>(FutureOr<E> Function(State event) convert) {
+    return _states.asyncMap(convert);
   }
 
   @override
   Stream<R> cast<R>() {
-    return _behavior.cast();
+    return _states.cast();
   }
 
   @override
   Future close() {
-    return _behavior.close();
+    return _states.close();
   }
 
   @override
   Future<bool> contains(Object? needle) {
-    return _behavior.contains(needle);
+    return _states.contains(needle);
   }
 
   @override
-  Stream<T> distinct([bool Function(T previous, T next)? equals]) {
-    return _behavior.distinct(equals);
+  Stream<State> distinct([bool Function(State previous, State next)? equals]) {
+    return _states.distinct(equals);
   }
 
   @override
-  Future get done => _behavior.done;
+  Future get done => _states.done;
 
   @override
   Future<E> drain<E>([E? futureValue]) {
-    return _behavior.drain(futureValue);
+    return _states.drain(futureValue);
   }
 
   @override
-  Future<T> elementAt(int index) {
-    return _behavior.elementAt(index);
+  Future<State> elementAt(int index) {
+    return _states.elementAt(index);
   }
 
   @override
-  Object get error => _behavior.error;
+  Object get error => _states.error;
 
   @override
-  Object? get errorOrNull => _behavior.errorOrNull;
+  Object? get errorOrNull => _states.errorOrNull;
 
   @override
-  Future<bool> every(bool Function(T element) test) {
-    return _behavior.every(test);
+  Future<bool> every(bool Function(State element) test) {
+    return _states.every(test);
   }
 
   @override
-  Stream<S> expand<S>(Iterable<S> Function(T element) convert) {
-    return _behavior.expand(convert);
+  Stream<S> expand<S>(Iterable<S> Function(State element) convert) {
+    return _states.expand(convert);
   }
 
   @override
-  Future<T> get first => _behavior.first;
+  Future<State> get first => _states.first;
 
   @override
-  Future<T> firstWhere(bool Function(T element) test, {T Function()? orElse}) {
-    return _behavior.firstWhere(test, orElse: orElse);
+  Future<State> firstWhere(bool Function(State element) test, {State Function()? orElse}) {
+    return _states.firstWhere(test, orElse: orElse);
   }
 
   @override
-  Future<S> fold<S>(S initialValue, S Function(S previous, T element) combine) {
-    return _behavior.fold(initialValue, combine);
+  Future<S> fold<S>(S initialValue, S Function(S previous, State element) combine) {
+    return _states.fold(initialValue, combine);
   }
 
   @override
-  Future<void> forEach(void Function(T element) action) {
-    return _behavior.forEach(action);
+  Future<void> forEach(void Function(State element) action) {
+    return _states.forEach(action);
   }
 
   @override
-  Stream<T> handleError(Function onError, {bool Function(dynamic error)? test}) {
-    return _behavior.handleError(onError, test: test);
+  Stream<State> handleError(Function onError, {bool Function(dynamic error)? test}) {
+    return _states.handleError(onError, test: test);
   }
 
   @override
-  bool get hasError => _behavior.hasError;
+  bool get hasError => _states.hasError;
 
   @override
-  bool get hasListener => _behavior.hasListener;
+  bool get hasListener => _states.hasListener;
 
   @override
-  bool get hasValue => _behavior.hasValue;
+  bool get hasValue => _states.hasValue;
 
   @override
-  bool get isBroadcast => _behavior.isBroadcast;
+  bool get isBroadcast => _states.isBroadcast;
 
   @override
-  bool get isClosed => _behavior.isClosed;
+  bool get isClosed => _states.isClosed;
 
   @override
-  Future<bool> get isEmpty => _behavior.isEmpty;
+  Future<bool> get isEmpty => _states.isEmpty;
 
   @override
-  bool get isPaused => _behavior.isPaused;
+  bool get isPaused => _states.isPaused;
 
   @override
   Future<String> join([String separator = ""]) {
-    return _behavior.join(separator);
+    return _states.join(separator);
   }
 
   @override
-  Future<T> get last => _behavior.last;
+  Future<State> get last => _states.last;
 
   @override
-  StreamNotification<T>? get lastEventOrNull => _behavior.lastEventOrNull;
+  StreamNotification<State>? get lastEventOrNull => _states.lastEventOrNull;
 
   @override
-  Future<T> lastWhere(bool Function(T element) test, {T Function()? orElse}) {
-    return _behavior.lastWhere(test, orElse: orElse);
+  Future<State> lastWhere(bool Function(State element) test, {State Function()? orElse}) {
+    return _states.lastWhere(test, orElse: orElse);
   }
 
   @override
-  Future<int> get length => _behavior.length;
+  Future<int> get length => _states.length;
 
   @override
-  StreamSubscription<T> listen(void Function(T value)? onData,
+  StreamSubscription<State> listen(void Function(State value)? onData,
       {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return _behavior.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return _states.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   @override
-  Stream<S> map<S>(S Function(T event) convert) {
-    return _behavior.map(convert);
+  Stream<S> map<S>(S Function(State event) convert) {
+    return _states.map(convert);
   }
 
   @override
-  void onAdd(T event) {
-    _behavior.onAdd(event);
+  void onAdd(State event) {
+    _states.onAdd(event);
   }
 
   @override
   void onAddError(Object error, [StackTrace? stackTrace]) {
-    _behavior.onAddError(error, stackTrace);
+    _states.onAddError(error, stackTrace);
   }
 
   @override
-  Future pipe(StreamConsumer<T> streamConsumer) {
-    return _behavior.pipe(streamConsumer);
+  Future pipe(StreamConsumer<State> streamConsumer) {
+    return _states.pipe(streamConsumer);
   }
 
   @override
-  Future<T> reduce(T Function(T previous, T element) combine) {
-    return _behavior.reduce(combine);
+  Future<State> reduce(State Function(State previous, State element) combine) {
+    return _states.reduce(combine);
   }
 
   @override
-  Future<T> get single => _behavior.single;
+  Future<State> get single => _states.single;
 
   @override
-  Future<T> singleWhere(bool Function(T element) test, {T Function()? orElse}) {
-    return _behavior.singleWhere(test, orElse: orElse);
+  Future<State> singleWhere(bool Function(State element) test, {State Function()? orElse}) {
+    return _states.singleWhere(test, orElse: orElse);
   }
 
   @override
-  StreamSink<T> get sink => _behavior.sink;
+  StreamSink<State> get sink => _states.sink;
 
   @override
-  Stream<T> skip(int count) {
-    return _behavior.skip(count);
+  Stream<State> skip(int count) {
+    return _states.skip(count);
   }
 
   @override
-  Stream<T> skipWhile(bool Function(T element) test) {
-    return _behavior.skipWhile(test);
+  Stream<State> skipWhile(bool Function(State element) test) {
+    return _states.skipWhile(test);
   }
 
   @override
-  StackTrace? get stackTrace => _behavior.stackTrace;
+  StackTrace? get stackTrace => _states.stackTrace;
 
   @override
-  ValueStream<T> get stream => _behavior.stream;
+  ValueStream<State> get stream => _states.stream;
 
   @override
-  Stream<T> take(int count) {
-    return _behavior.take(count);
+  Stream<State> take(int count) {
+    return _states.take(count);
   }
 
   @override
-  Stream<T> takeWhile(bool Function(T element) test) {
-    return _behavior.takeWhile(test);
+  Stream<State> takeWhile(bool Function(State element) test) {
+    return _states.takeWhile(test);
   }
 
   @override
-  Stream<T> timeout(Duration timeLimit, {void Function(EventSink<T> sink)? onTimeout}) {
-    return _behavior.timeout(timeLimit, onTimeout: onTimeout);
+  Stream<State> timeout(Duration timeLimit, {void Function(EventSink<State> sink)? onTimeout}) {
+    return _states.timeout(timeLimit, onTimeout: onTimeout);
   }
 
   @override
-  Future<List<T>> toList() {
-    return _behavior.toList();
+  Future<List<State>> toList() {
+    return _states.toList();
   }
 
   @override
-  Future<Set<T>> toSet() {
-    return _behavior.toSet();
+  Future<Set<State>> toSet() {
+    return _states.toSet();
   }
 
   @override
-  Stream<S> transform<S>(StreamTransformer<T, S> streamTransformer) {
-    return _behavior.transform(streamTransformer);
+  Stream<S> transform<S>(StreamTransformer<State, S> streamTransformer) {
+    return _states.transform(streamTransformer);
   }
 
   @override
-  T? get valueOrNull => _behavior.valueOrNull;
+  State? get valueOrNull => _states.valueOrNull;
 
   @override
-  Stream<T> where(bool Function(T event) test) {
-    return _behavior.where(test);
+  Stream<State> where(bool Function(State event) test) {
+    return _states.where(test);
   }
 }
