@@ -97,7 +97,7 @@ void main() {
   });
 
   test('Initial value is present', () async {
-    AlphabetState? eventHandler(event, state) {
+    AlphabetState? eventHandler(AlphabetEvent event, AlphabetState state) {
       switch (event) {
         case X():
           return C();

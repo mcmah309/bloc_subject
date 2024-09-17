@@ -14,11 +14,13 @@ typedef Handler<Event, State> = FutureOr<State?> Function(Event, State);
 /// In some cases it is possible for an [Event] to be received before the first [State] is set.
 /// This is the callback for cases.
 /// To avoid this, when needed, consider using [waitForState] before adding any [Event]s.
+/// See [BlocSubject.defaultEmptyHandler] for modifying the default implementation.
 /// {@endtemplate}
 typedef EmptyHandler<Event, State> = FutureOr<State?> Function(Event);
 
+/// A [BehaviorSubject] that handles [Event]s and modify the [State] based on the [Event]s.
 class BlocSubject<Event, State> implements BehaviorSubject<State> {
-  /// For constructors that offer a [EmptyHandler] if no [EmptyHandler] is provided, this will be called.
+  /// For constructors that offer a [EmptyHandler], if no [EmptyHandler] is provided, this will be called.
   /// The default is to throw an exception to make debugging easier.
   static EmptyHandler defaultEmptyHandler = (event) => throw NoInitialValue();
 
@@ -36,7 +38,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     required Handler<Event, State> handler,
 
     /// {@macro empty_handler}
-    /// This does not matter if [add] is called before any yield.
+    /// Note, this does not matter if [add] is called before any yield.
     EmptyHandler<Event, State>? emptyHandler,
     void Function()? onListen,
     void Function()? onCancel,
@@ -52,7 +54,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     required Handler<Event, State> handler,
 
     /// {@macro empty_handler}
-    /// Note even if this stream already holds a value, you may need to yield for the value to be seen by this Subject.
+    /// Note, even if this stream already holds a value, you may need to yield for the value to be seen by this Subject.
     EmptyHandler<Event, State>? emptyHandler,
     void Function()? onListen,
     void Function()? onCancel,
@@ -126,6 +128,9 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   void reEmit() {
     if (isClosed) {
       throw const SubjectClosed();
+    }
+    if (!_states.hasValue) {
+      throw const NoInitialValue();
     }
     final val = _states.value;
     _states.add(val);
