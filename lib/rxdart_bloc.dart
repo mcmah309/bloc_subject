@@ -7,37 +7,37 @@ import 'package:rxdart/src/utils/notification.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:rxdart/transformers.dart';
 
-typedef JointFn<Event, State> = FutureOr<State?> Function(Event, State);
+typedef EventHandler<Event, State> = FutureOr<State?> Function(Event, State);
 
-class Joint<Event, State> implements BehaviorSubject<State> {
+class BlocSubject<Event, State> implements BehaviorSubject<State> {
   final BehaviorSubject<State> _states; // in/out
   final BehaviorSubject<Event> _events = BehaviorSubject(); // in, all events get added here
   Set<StreamSubscription<Event>> additionalEventListeners = {};
   StreamSubscription<State>? _transformSub;
 
-  Joint._(this._states, JointFn<Event, State>? jointFn) {
+  BlocSubject._(this._states, EventHandler<Event, State>? eventHandler) {
     if (!_states.hasValue) {
       // todo check if need to yield?
       throw Exception("State must have initial value");
     }
-    if (jointFn != null) {
-      handleEvents(jointFn);
+    if (eventHandler != null) {
+      handleEvents(eventHandler);
     }
   }
 
-  factory Joint.fromStream(Stream<State> stream, [JointFn<Event, State>? jointFn]) {
+  factory BlocSubject.fromStream(Stream<State> stream, [EventHandler<Event, State>? eventHandler]) {
     final BehaviorSubject<State> behavior = BehaviorSubject();
     behavior.addStream(stream);
-    return Joint._(behavior, jointFn);
+    return BlocSubject._(behavior, eventHandler);
   }
 
-  factory Joint.fromBehavior(BehaviorSubject<State> behavior, [JointFn<Event, State>? jointFn]) {
-    return Joint._(behavior, jointFn);
+  factory BlocSubject.fromBehavior(BehaviorSubject<State> behavior, [EventHandler<Event, State>? eventHandler]) {
+    return BlocSubject._(behavior, eventHandler);
   }
 
-  factory Joint.fromValue(State val, [JointFn<Event, State>? jointFn]) {
+  factory BlocSubject.fromValue(State val, [EventHandler<Event, State>? eventHandler]) {
     final BehaviorSubject<State> behavior = BehaviorSubject.seeded(val);
-    return Joint._(behavior, jointFn);
+    return BlocSubject._(behavior, eventHandler);
   }
 
   //************************************************************************//
@@ -48,12 +48,12 @@ class Joint<Event, State> implements BehaviorSubject<State> {
     _states.add(val);
   }
 
-  void handleEvents(JointFn<Event, State> jointFn) {
+  void handleEvents(EventHandler<Event, State> eventHandler) {
     if (_transformSub != null) {
       _transformSub!.cancel();
     }
     final transform = _events.flatMap<State>((event) async* {
-      final newData = await jointFn(event, _states.value);
+      final newData = await eventHandler(event, _states.value);
       if (newData == null) {
         return;
       }

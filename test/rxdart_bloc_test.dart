@@ -20,7 +20,7 @@ class Z implements AlphabetEvent {}
 
 void main() {
   test('`await` is needed to change state with event', () async {
-    Joint<AlphabetEvent, AlphabetState> joint = Joint.fromValue(A(), (event, state) {
+    BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromValue(A(), (event, state) {
       switch (event) {
         case X():
           return B();
@@ -31,19 +31,19 @@ void main() {
       }
     });
 
-    expect(joint.value, isA<A>());
+    expect(subject.value, isA<A>());
 
-    joint.addEvent(X());
+    subject.addEvent(X());
 
-    expect(joint.value, isA<A>());
+    expect(subject.value, isA<A>());
 
     await Future.delayed(const Duration(milliseconds: 100));
 
-    expect(joint.value, isA<B>());
+    expect(subject.value, isA<B>());
   });
 
   test('`await` is not needed to change state directly', () async {
-    Joint<AlphabetEvent, AlphabetState> joint = Joint.fromValue(A(), (event, state) {
+    BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromValue(A(), (event, state) {
       switch (event) {
         case X():
           return B();
@@ -54,15 +54,15 @@ void main() {
       }
     });
 
-    expect(joint.value, isA<A>());
+    expect(subject.value, isA<A>());
 
-    joint.add(B());
+    subject.add(B());
 
-    expect(joint.value, isA<B>());
+    expect(subject.value, isA<B>());
   });
 
   test('Change event handle', () async {
-    Joint<AlphabetEvent, AlphabetState> joint = Joint.fromValue(A(), (event, state) {
+    BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromValue(A(), (event, state) {
       switch (event) {
         case X():
           return B();
@@ -73,7 +73,7 @@ void main() {
       }
     });
 
-    joint.handleEvents((event, state) {
+    subject.handleEvents((event, state) {
       switch (event) {
         case X():
           return C();
@@ -84,12 +84,12 @@ void main() {
       }
     });
 
-    expect(joint.value, isA<A>());
+    expect(subject.value, isA<A>());
 
-    joint.addEvent(X());
+    subject.addEvent(X());
 
     await Future.delayed(const Duration(milliseconds: 100));
 
-    expect(joint.value, isA<C>());
+    expect(subject.value, isA<C>());
   });
 }
