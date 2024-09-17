@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bloc_rxdart/src/exceptions.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 import 'package:rxdart/subjects.dart';
@@ -10,7 +11,7 @@ typedef EventHandler<Event, State> = FutureOr<State?> Function(Event, State);
 class BlocSubject<Event, State> implements BehaviorSubject<State> {
   final BehaviorSubject<State> _states; // in/out
   final BehaviorSubject<Event> _events = BehaviorSubject(); // in, all events get added here
-  Set<StreamSubscription<Event>> additionalEventListeners = {};
+  final Set<StreamSubscription<Event>> _additionalEventListeners = {};
   StreamSubscription<State>? _transformSub;
 
   BlocSubject._(this._states, EventHandler<Event, State>? eventHandler) {
@@ -29,7 +30,8 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     return BlocSubject._(behavior, eventHandler);
   }
 
-  factory BlocSubject.fromBehavior(BehaviorSubject<State> behavior, [EventHandler<Event, State>? eventHandler]) {
+  factory BlocSubject.fromBehavior(BehaviorSubject<State> behavior,
+      [EventHandler<Event, State>? eventHandler]) {
     return BlocSubject._(behavior, eventHandler);
   }
 
@@ -42,11 +44,17 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
 
   /// Remits the last emitted value
   void reEmit() {
+    if (isClosed) {
+      throw const SubjectClosed();
+    }
     final val = _states.value;
     _states.add(val);
   }
 
   void handleEvents(EventHandler<Event, State> eventHandler) {
+    if (isClosed) {
+      throw const SubjectClosed();
+    }
     if (_transformSub != null) {
       _transformSub!.cancel();
     }
@@ -67,15 +75,21 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   }
 
   void listenToEvents(Stream<Event> events) {
+    if (isClosed) {
+      throw const SubjectClosed();
+    }
     final sub = events.listen((event) {
       addEvent(event);
     });
-    additionalEventListeners.add(sub);
+    _additionalEventListeners.add(sub);
   }
 
   /// Adds an event. Note an event is not immediately processed. You need to yield to the scheduler since
   /// `handleEvents` functions is allowed to be async.
   void addEvent(Event event) {
+    if (isClosed) {
+      throw const SubjectClosed();
+    }
     _events.add(event);
   }
 
@@ -166,6 +180,11 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
 
   @override
   Future close() {
+    _transformSub?.cancel();
+    _events.close();
+    for (final sub in _additionalEventListeners) {
+      sub.cancel();
+    }
     return _states.close();
   }
 
