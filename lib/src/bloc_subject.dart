@@ -31,6 +31,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     EventHandler<Event, State>? eventHandler,
 
     /// {@macro require_state}
+    /// This does not matter if [add] is called before any yield.
     bool requireState = true,
     void Function()? onListen,
     void Function()? onCancel,
@@ -63,7 +64,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     EventHandler<Event, State>? eventHandler,
 
     /// {@macro require_state}
-    /// Does not matter if [behavior] was created from the `seeded` constructor.
+    /// This does not matter if [behavior] was created from the `seeded` constructor or [add] is called before any yield.
     bool requireState = true,
   }) {
     return BlocSubject._(behavior, eventHandler, requireState);

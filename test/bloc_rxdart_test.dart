@@ -130,5 +130,50 @@ void main() {
     subject.addEvent(X());
     await Future.delayed(const Duration(milliseconds: 100));
     expect(subject.value, isA<C>());
+
+    subject = BlocSubject();
+    subject.add(A());
+    subject.eventHandler(eventHandler);
+    expect(subject.value, isA<A>());
+    subject.addEvent(X());
+    await Future.delayed(const Duration(milliseconds: 100));
+    expect(subject.value, isA<C>());
   });
+
+  // test('Initial value is not present', () async {
+  //   AlphabetState? eventHandler(event, state) {
+  //     switch (event) {
+  //       case X():
+  //         return C();
+  //       case Y():
+  //         return C();
+  //       case Z():
+  //         return null;
+  //     }
+  //   }
+
+  //   BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromStream(Stream.empty());
+  //   subject.eventHandler(eventHandler);
+  //   expect(subject.hasValue, isFalse);
+  //   await Future.delayed(const Duration(milliseconds: 100));
+  //   expect(subject.value, isA<A>());
+  //   subject.addEvent(X());
+  //   await Future.delayed(const Duration(milliseconds: 100));
+  //   expect(subject.value, isA<C>());
+
+  //   subject = BlocSubject.fromBehavior(BehaviorSubject.seeded(A()));
+  //   subject.eventHandler(eventHandler);
+  //   expect(subject.value, isA<A>());
+  //   subject.addEvent(X());
+  //   await Future.delayed(const Duration(milliseconds: 100));
+  //   expect(subject.value, isA<C>());
+
+  //   subject = BlocSubject();
+  //   subject.add(A());
+  //   subject.eventHandler(eventHandler);
+  //   expect(subject.value, isA<A>());
+  //   subject.addEvent(X());
+  //   await Future.delayed(const Duration(milliseconds: 100));
+  //   expect(subject.value, isA<C>());
+  // });
 }
