@@ -7,16 +7,20 @@ import 'package:rxdart/subjects.dart';
 import 'package:rxdart/transformers.dart';
 
 /// Handler for [Event]s.
-typedef Handler<Event, State> = FutureOr<State?> Function(Event, State);
+typedef Handler<Event, State> = FutureOr<State?> Function(Event event, State state);
 
 /// {@template empty_handler}
 /// Empty [State] handler.
 /// In some cases it is possible for an [Event] to be received before the first [State] is set.
-/// This is the callback for cases.
+/// This is the callback for these cases.
 /// To avoid this, when needed, consider using [waitForState] before adding any [Event]s.
 /// See [BlocSubject.defaultEmptyHandler] for modifying the default implementation.
 /// {@endtemplate}
-typedef EmptyHandler<Event, State> = FutureOr<State?> Function(Event);
+typedef EmptyHandler<Event, State> = FutureOr<State?> Function(Event event);
+
+/// Used to modify the event stream such a debouncing.
+/// Applied to all events - [addEvent] or [listenToEvents].
+typedef EventsModifier<Event> = Stream<Event> Function(Stream<Event> events);
 
 /// A [BehaviorSubject] that handles [Event]s and modify the [State] based on the [Event]s.
 class BlocSubject<Event, State> implements BehaviorSubject<State> {
@@ -29,9 +33,9 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   final Set<StreamSubscription<Event>> _additionalEventSubscriptions = {};
   StreamSubscription<State>? _transformSubscription;
 
-  BlocSubject._(
-      this._states, Handler<Event, State> handler, EmptyHandler<Event, State>? emptyHandler) {
-    eventHandler(handler, emptyHandler: emptyHandler);
+  BlocSubject._(this._states, Handler<Event, State> handler,
+      EmptyHandler<Event, State>? emptyHandler, EventsModifier<Event>? eventsModifier) {
+    _eventHandler(handler, emptyHandler: emptyHandler, eventsModifier: eventsModifier);
   }
 
   factory BlocSubject({
@@ -40,13 +44,14 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     /// {@macro empty_handler}
     /// Note, this does not matter if [add] is called before any yield.
     EmptyHandler<Event, State>? emptyHandler,
+    EventsModifier<Event>? eventsModifier,
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
   }) {
     final BehaviorSubject<State> behavior =
         BehaviorSubject(onListen: onListen, onCancel: onCancel, sync: sync);
-    return BlocSubject._(behavior, handler, emptyHandler);
+    return BlocSubject._(behavior, handler, emptyHandler, eventsModifier);
   }
 
   factory BlocSubject.fromStream(
@@ -56,6 +61,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     /// {@macro empty_handler}
     /// Note, even if this stream already holds a value, you may need to yield for the value to be seen by this Subject.
     EmptyHandler<Event, State>? emptyHandler,
+    EventsModifier<Event>? eventsModifier,
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
@@ -63,7 +69,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     final BehaviorSubject<State> behavior =
         BehaviorSubject(onListen: onListen, onCancel: onCancel, sync: sync);
     behavior.addStream(stream);
-    return BlocSubject._(behavior, handler, emptyHandler);
+    return BlocSubject._(behavior, handler, emptyHandler, eventsModifier);
   }
 
   factory BlocSubject.fromBehavior(
@@ -73,29 +79,38 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     /// {@macro empty_handler}
     /// This does not matter if [behavior] already has a value, such as when created from the `seeded` constructor or [add] is called before any yield.
     EmptyHandler<Event, State>? emptyHandler,
+    EventsModifier<Event>? eventsModifier,
   }) {
-    return BlocSubject._(behavior, handler, emptyHandler);
+    return BlocSubject._(behavior, handler, emptyHandler, eventsModifier);
   }
 
   factory BlocSubject.fromValue(
     State val, {
     required Handler<Event, State> handler,
+    EventsModifier<Event>? eventsModifier,
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
   }) {
     final BehaviorSubject<State> behavior =
         BehaviorSubject.seeded(val, onListen: onListen, onCancel: onCancel, sync: sync);
-    return BlocSubject._(behavior, handler, null);
+    return BlocSubject._(behavior, handler, null, eventsModifier);
   }
 
   //************************************************************************//
 
-  void eventHandler(Handler<Event, State> handler, {EmptyHandler<Event, State>? emptyHandler}) {
+  void _eventHandler(Handler<Event, State> handler,
+      {EmptyHandler<Event, State>? emptyHandler, EventsModifier<Event>? eventsModifier}) {
     if (_transformSubscription != null) {
       _transformSubscription!.cancel();
     }
-    final transform = _events.flatMap<State>((event) async* {
+    final Stream<Event> events;
+    if (eventsModifier == null) {
+      events = _events;
+    } else {
+      events = eventsModifier(_events);
+    }
+    final transform = events.flatMap<State>((event) async* {
       final value = _states.valueOrNull;
       final State? newData;
       if (value == null) {
