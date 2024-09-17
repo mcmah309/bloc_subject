@@ -6,49 +6,51 @@ import 'package:rxdart/src/utils/notification.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:rxdart/transformers.dart';
 
-typedef EventHandler<Event, State> = FutureOr<State?> Function(Event, State);
+typedef Handler<Event, State> = FutureOr<State?> Function(Event, State);
+
+/// {@template empty_handler}
+/// In some cases it is possible for an [Event] to be received before the first [State] is set.
+/// This is the callback for such empty [State] case.
+/// To avoid this, when needed, consider using [waitForState] before adding any [Event]s.
+/// {@endtemplate}
+typedef EmptyHandler<Event, State> = FutureOr<State?> Function(Event);
 
 class BlocSubject<Event, State> implements BehaviorSubject<State> {
+  /// For constructors that offer a [EmptyHandler] if no [EmptyHandler] is provided, this will be called.
+  /// The default is to throw an exception to make debugging easier.
+  static EmptyHandler defaultEmptyHandler = (event) => throw NoInitialValue();
+
   final BehaviorSubject<State> _states; // in/out
   final BehaviorSubject<Event> _events = BehaviorSubject(); // in, all events get added here
   final Set<StreamSubscription<Event>> _additionalEventSubscriptions = {};
   StreamSubscription<State>? _transformSubscription;
 
-  /// {@template require_state}
-  /// If true, Will throw a [NoInitialValue] if an [Event] is received before the first [State] is set.
-  /// Defaults to true as this helps identify bugs. If false, any [Event]s received before the
-  /// [State] is set will be ignored. When needed, consider using [waitForState] before adding any [Event]s.
-  /// {@endtemplate}
-  final bool requireState;
-
-  BlocSubject._(this._states, EventHandler<Event, State>? handler, this.requireState) {
-    if (handler != null) {
-      eventHandler(handler);
-    }
+  BlocSubject._(
+      this._states, Handler<Event, State> handler, EmptyHandler<Event, State>? emptyHandler) {
+    _eventHandler(handler, emptyHandler);
   }
 
   factory BlocSubject({
-    EventHandler<Event, State>? eventHandler,
+    required Handler<Event, State> handler,
 
-    /// {@macro require_state}
+    /// {@macro empty_handler}
     /// This does not matter if [add] is called before any yield.
-    bool requireState = true,
+    EmptyHandler<Event, State>? emptyHandler,
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
   }) {
     final BehaviorSubject<State> behavior =
         BehaviorSubject(onListen: onListen, onCancel: onCancel, sync: sync);
-    return BlocSubject._(behavior, eventHandler, requireState);
+    return BlocSubject._(behavior, handler, emptyHandler);
   }
 
   factory BlocSubject.fromStream(
     Stream<State> stream, {
-    EventHandler<Event, State>? eventHandler,
-
-    /// {@macro require_state}
+    required Handler<Event, State> handler,
+    /// {@macro empty_handler}
     /// Note even if this stream already holds a value, you may need to yield for the value to be seen by this Subject.
-    bool requireState = true,
+    EmptyHandler<Event, State>? emptyHandler,
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
@@ -56,59 +58,50 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     final BehaviorSubject<State> behavior =
         BehaviorSubject(onListen: onListen, onCancel: onCancel, sync: sync);
     behavior.addStream(stream);
-    return BlocSubject._(behavior, eventHandler, requireState);
+    return BlocSubject._(behavior, handler, emptyHandler);
   }
 
   factory BlocSubject.fromBehavior(
     BehaviorSubject<State> behavior, {
-    EventHandler<Event, State>? eventHandler,
-
-    /// {@macro require_state}
-    /// This does not matter if [behavior] was created from the `seeded` constructor or [add] is called before any yield.
-    bool requireState = true,
+    required Handler<Event, State> handler,
+    /// {@macro empty_handler}
+    /// This does not matter if [behavior] already has a value, such as when created from the `seeded` constructor or [add] is called before any yield.
+    EmptyHandler<Event, State>? emptyHandler,
   }) {
-    return BlocSubject._(behavior, eventHandler, requireState);
+    return BlocSubject._(behavior, handler, emptyHandler);
   }
 
   factory BlocSubject.fromValue(
     State val, {
-    EventHandler<Event, State>? eventHandler,
+    required Handler<Event, State> handler,
     void Function()? onListen,
     void Function()? onCancel,
     bool sync = false,
   }) {
     final BehaviorSubject<State> behavior =
         BehaviorSubject.seeded(val, onListen: onListen, onCancel: onCancel, sync: sync);
-    return BlocSubject._(behavior, eventHandler, true);
+    return BlocSubject._(behavior, handler, null);
   }
 
   //************************************************************************//
 
-  /// Remits the last emitted value
-  void reEmit() {
-    if (isClosed) {
-      throw const SubjectClosed();
-    }
-    final val = _states.value;
-    _states.add(val);
-  }
-
-  void eventHandler(EventHandler<Event, State> eventHandler) {
-    if (isClosed) {
-      throw const SubjectClosed();
-    }
+  void _eventHandler(Handler<Event, State> handler, EmptyHandler<Event, State>? emptyHandler) {
     if (_transformSubscription != null) {
       _transformSubscription!.cancel();
     }
     final transform = _events.flatMap<State>((event) async* {
-      if (!_states.hasValue) {
-        if (requireState) {
-          throw const NoInitialValue();
-        } else {
+      final value = _states.valueOrNull;
+      final State? newData;
+      if (value == null) {
+        if (emptyHandler == null) {
+          defaultEmptyHandler(event);
           return;
+        } else {
+          newData = await emptyHandler(event);
         }
+      } else {
+        newData = await handler(event, _states.value);
       }
-      final newData = await eventHandler(event, _states.value);
       if (newData == null) {
         return;
       }
@@ -121,6 +114,17 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     }, onDone: () {
       _states.close();
     });
+  }
+
+  //************************************************************************//
+
+  /// Remits the last emitted value
+  void reEmit() {
+    if (isClosed) {
+      throw const SubjectClosed();
+    }
+    final val = _states.value;
+    _states.add(val);
   }
 
   void listenToEvents(Stream<Event> events) {
