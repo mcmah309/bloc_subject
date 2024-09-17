@@ -1,4 +1,4 @@
-library pipes;
+library rxdart_bloc;
 
 import 'dart:async';
 
