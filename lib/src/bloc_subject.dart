@@ -6,11 +6,13 @@ import 'package:rxdart/src/utils/notification.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:rxdart/transformers.dart';
 
+/// Handler for [Event]s.
 typedef Handler<Event, State> = FutureOr<State?> Function(Event, State);
 
 /// {@template empty_handler}
+/// Empty [State] handler.
 /// In some cases it is possible for an [Event] to be received before the first [State] is set.
-/// This is the callback for such empty [State] case.
+/// This is the callback for cases.
 /// To avoid this, when needed, consider using [waitForState] before adding any [Event]s.
 /// {@endtemplate}
 typedef EmptyHandler<Event, State> = FutureOr<State?> Function(Event);
@@ -27,7 +29,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
 
   BlocSubject._(
       this._states, Handler<Event, State> handler, EmptyHandler<Event, State>? emptyHandler) {
-    _eventHandler(handler, emptyHandler);
+    eventHandler(handler, emptyHandler: emptyHandler);
   }
 
   factory BlocSubject({
@@ -48,6 +50,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   factory BlocSubject.fromStream(
     Stream<State> stream, {
     required Handler<Event, State> handler,
+
     /// {@macro empty_handler}
     /// Note even if this stream already holds a value, you may need to yield for the value to be seen by this Subject.
     EmptyHandler<Event, State>? emptyHandler,
@@ -64,6 +67,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   factory BlocSubject.fromBehavior(
     BehaviorSubject<State> behavior, {
     required Handler<Event, State> handler,
+
     /// {@macro empty_handler}
     /// This does not matter if [behavior] already has a value, such as when created from the `seeded` constructor or [add] is called before any yield.
     EmptyHandler<Event, State>? emptyHandler,
@@ -85,7 +89,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
 
   //************************************************************************//
 
-  void _eventHandler(Handler<Event, State> handler, EmptyHandler<Event, State>? emptyHandler) {
+  void eventHandler(Handler<Event, State> handler, {EmptyHandler<Event, State>? emptyHandler}) {
     if (_transformSubscription != null) {
       _transformSubscription!.cancel();
     }
