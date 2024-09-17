@@ -1,6 +1,6 @@
+import 'package:bloc_rxdart/bloc_rxdart.dart';
 import 'package:test/test.dart';
 
-import 'package:rxdart_bloc/rxdart_bloc.dart';
 
 sealed class AlphabetState {}
 

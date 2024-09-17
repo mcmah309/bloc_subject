@@ -1,4 +1,4 @@
-library rxdart_bloc;
+library bloc_rxdart;
 
 import 'dart:async';
 

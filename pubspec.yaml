@@ -1,4 +1,4 @@
-name: rxdart_bloc
+name: bloc_rxdart
 description: Adds a bloc subject for rxdart
 version: 0.1.0
 # repository: https://github.com/my_org/my_repo
