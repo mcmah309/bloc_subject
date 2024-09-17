@@ -1,6 +1,6 @@
 import 'package:bloc_rxdart/bloc_rxdart.dart';
+import 'package:rxdart/subjects.dart';
 import 'package:test/test.dart';
-
 
 sealed class AlphabetState {}
 
@@ -20,7 +20,8 @@ class Z implements AlphabetEvent {}
 
 void main() {
   test('`await` is needed to change state with event', () async {
-    BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromValue(A(), (event, state) {
+    BlocSubject<AlphabetEvent, AlphabetState> subject =
+        BlocSubject.fromValue(A(), eventHandler: (event, state) {
       switch (event) {
         case X():
           return B();
@@ -43,7 +44,8 @@ void main() {
   });
 
   test('`await` is not needed to change state directly', () async {
-    BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromValue(A(), (event, state) {
+    BlocSubject<AlphabetEvent, AlphabetState> subject =
+        BlocSubject.fromValue(A(), eventHandler: (event, state) {
       switch (event) {
         case X():
           return B();
@@ -62,7 +64,8 @@ void main() {
   });
 
   test('Change event handle', () async {
-    BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromValue(A(), (event, state) {
+    BlocSubject<AlphabetEvent, AlphabetState> subject =
+        BlocSubject.fromValue(A(), eventHandler: (event, state) {
       switch (event) {
         case X():
           return B();
@@ -73,7 +76,7 @@ void main() {
       }
     });
 
-    subject.handleEvents((event, state) {
+    subject.eventHandler((event, state) {
       switch (event) {
         case X():
           return C();
@@ -90,6 +93,42 @@ void main() {
 
     await Future.delayed(const Duration(milliseconds: 100));
 
+    expect(subject.value, isA<C>());
+  });
+
+  test('Initial value is present', () async {
+    AlphabetState? eventHandler(event, state) {
+      switch (event) {
+        case X():
+          return C();
+        case Y():
+          return C();
+        case Z():
+          return null;
+      }
+    }
+
+    BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromValue(A());
+    subject.eventHandler(eventHandler);
+    expect(subject.value, isA<A>());
+    subject.addEvent(X());
+    await Future.delayed(const Duration(milliseconds: 100));
+    expect(subject.value, isA<C>());
+
+    subject = BlocSubject.fromStream(Stream.value(A()));
+    subject.eventHandler(eventHandler);
+    expect(subject.hasValue, isFalse);
+    await Future.delayed(const Duration(milliseconds: 100));
+    expect(subject.value, isA<A>());
+    subject.addEvent(X());
+    await Future.delayed(const Duration(milliseconds: 100));
+    expect(subject.value, isA<C>());
+
+    subject = BlocSubject.fromBehavior(BehaviorSubject.seeded(A()));
+    subject.eventHandler(eventHandler);
+    expect(subject.value, isA<A>());
+    subject.addEvent(X());
+    await Future.delayed(const Duration(milliseconds: 100));
     expect(subject.value, isA<C>());
   });
 }

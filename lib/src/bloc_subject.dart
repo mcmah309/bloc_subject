@@ -11,33 +11,74 @@ typedef EventHandler<Event, State> = FutureOr<State?> Function(Event, State);
 class BlocSubject<Event, State> implements BehaviorSubject<State> {
   final BehaviorSubject<State> _states; // in/out
   final BehaviorSubject<Event> _events = BehaviorSubject(); // in, all events get added here
-  final Set<StreamSubscription<Event>> _additionalEventListeners = {};
-  StreamSubscription<State>? _transformSub;
+  final Set<StreamSubscription<Event>> _additionalEventSubscriptions = {};
+  StreamSubscription<State>? _transformSubscription;
 
-  BlocSubject._(this._states, EventHandler<Event, State>? eventHandler) {
-    if (!_states.hasValue) {
-      // todo check if need to yield?
-      throw Exception("State must have initial value");
-    }
-    if (eventHandler != null) {
-      handleEvents(eventHandler);
+  /// {@template require_state}
+  /// If true, Will throw a [NoInitialValue] if an [Event] is received before the first [State] is set.
+  /// Defaults to true as this helps identify bugs. If false, any [Event]s received before the
+  /// [State] is set will be ignored. When needed, consider using [waitForState] before adding any [Event]s.
+  /// {@endtemplate}
+  final bool requireState;
+
+  BlocSubject._(this._states, EventHandler<Event, State>? handler, this.requireState) {
+    if (handler != null) {
+      eventHandler(handler);
     }
   }
 
-  factory BlocSubject.fromStream(Stream<State> stream, [EventHandler<Event, State>? eventHandler]) {
-    final BehaviorSubject<State> behavior = BehaviorSubject();
+  factory BlocSubject({
+    EventHandler<Event, State>? eventHandler,
+
+    /// {@macro require_state}
+    bool requireState = true,
+    void Function()? onListen,
+    void Function()? onCancel,
+    bool sync = false,
+  }) {
+    final BehaviorSubject<State> behavior =
+        BehaviorSubject(onListen: onListen, onCancel: onCancel, sync: sync);
+    return BlocSubject._(behavior, eventHandler, requireState);
+  }
+
+  factory BlocSubject.fromStream(
+    Stream<State> stream, {
+    EventHandler<Event, State>? eventHandler,
+
+    /// {@macro require_state}
+    /// Note even if this stream already holds a value, you may need to yield for the value to be seen by this Subject.
+    bool requireState = true,
+    void Function()? onListen,
+    void Function()? onCancel,
+    bool sync = false,
+  }) {
+    final BehaviorSubject<State> behavior =
+        BehaviorSubject(onListen: onListen, onCancel: onCancel, sync: sync);
     behavior.addStream(stream);
-    return BlocSubject._(behavior, eventHandler);
+    return BlocSubject._(behavior, eventHandler, requireState);
   }
 
-  factory BlocSubject.fromBehavior(BehaviorSubject<State> behavior,
-      [EventHandler<Event, State>? eventHandler]) {
-    return BlocSubject._(behavior, eventHandler);
+  factory BlocSubject.fromBehavior(
+    BehaviorSubject<State> behavior, {
+    EventHandler<Event, State>? eventHandler,
+
+    /// {@macro require_state}
+    /// Does not matter if [behavior] was created from the `seeded` constructor.
+    bool requireState = true,
+  }) {
+    return BlocSubject._(behavior, eventHandler, requireState);
   }
 
-  factory BlocSubject.fromValue(State val, [EventHandler<Event, State>? eventHandler]) {
-    final BehaviorSubject<State> behavior = BehaviorSubject.seeded(val);
-    return BlocSubject._(behavior, eventHandler);
+  factory BlocSubject.fromValue(
+    State val, {
+    EventHandler<Event, State>? eventHandler,
+    void Function()? onListen,
+    void Function()? onCancel,
+    bool sync = false,
+  }) {
+    final BehaviorSubject<State> behavior =
+        BehaviorSubject.seeded(val, onListen: onListen, onCancel: onCancel, sync: sync);
+    return BlocSubject._(behavior, eventHandler, true);
   }
 
   //************************************************************************//
@@ -51,21 +92,28 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     _states.add(val);
   }
 
-  void handleEvents(EventHandler<Event, State> eventHandler) {
+  void eventHandler(EventHandler<Event, State> eventHandler) {
     if (isClosed) {
       throw const SubjectClosed();
     }
-    if (_transformSub != null) {
-      _transformSub!.cancel();
+    if (_transformSubscription != null) {
+      _transformSubscription!.cancel();
     }
     final transform = _events.flatMap<State>((event) async* {
+      if (!_states.hasValue) {
+        if (requireState) {
+          throw const NoInitialValue();
+        } else {
+          return;
+        }
+      }
       final newData = await eventHandler(event, _states.value);
       if (newData == null) {
         return;
       }
       yield newData;
     });
-    _transformSub = transform.listen((data) {
+    _transformSubscription = transform.listen((data) {
       _states.add(data);
     }, onError: (Object error, StackTrace stackTrace) {
       _states.addError(error, stackTrace);
@@ -81,7 +129,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     final sub = events.listen((event) {
       addEvent(event);
     });
-    _additionalEventListeners.add(sub);
+    _additionalEventSubscriptions.add(sub);
   }
 
   /// Adds an event. Note an event is not immediately processed. You need to yield to the scheduler since
@@ -91,6 +139,23 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
       throw const SubjectClosed();
     }
     _events.add(event);
+  }
+
+  /// Waits for the state to exist or for the optionally given [timeout]. Returns `true` if the state exists or
+  /// `false` if the state does not exist within the timeout.
+  Future<bool> waitForState([Duration? timeout]) async {
+    if (_states.hasValue) {
+      return true;
+    }
+    if (timeout == null) {
+      return _states.first.then((v) => true);
+    }
+    try {
+      await _states.first.timeout(timeout);
+      return true;
+    } on TimeoutException catch (_) {
+      return false;
+    }
   }
 
   // BehaviorSubject
@@ -180,9 +245,9 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
 
   @override
   Future close() {
-    _transformSub?.cancel();
+    _transformSubscription?.cancel();
     _events.close();
-    for (final sub in _additionalEventListeners) {
+    for (final sub in _additionalEventSubscriptions) {
       sub.cancel();
     }
     return _states.close();
