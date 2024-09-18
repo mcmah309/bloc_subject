@@ -8,7 +8,7 @@
 /// - [AutoDisposeBlocProviderFamily]
 library bloc_subject_provider;
 
-import 'package:bloc_subject/bloc_subject.dart';
+export 'package:bloc_subject/bloc_subject.dart';
 export 'package:riverpod/riverpod.dart';
 
 export 'src/framework.dart';
