@@ -105,7 +105,7 @@ abstract class _BlocSubjectProviderBase<E, S> extends ProviderBase<S> {
   /// changes.
   /// This may happen if the provider is refreshed or one of its dependencies
   /// has changes.
-  ProviderListenable<BlocSubject<E, S>> get bloc;
+  ProviderListenable<BlocSubject<E, S>> get subject;
 
   BlocSubject<E, S> _create(covariant BlocSubjectProviderElement<E, S> ref);
 }

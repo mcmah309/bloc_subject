@@ -53,7 +53,7 @@ class AutoDisposeBlocSubjectProvider<E, S>
   }
 
   @override
-  late final Refreshable<BlocSubject<E, S>> bloc = _notifier(this);
+  late final Refreshable<BlocSubject<E, S>> subject = _notifier(this);
 
   /// {@macro riverpod.overridewith}
   Override overrideWith(

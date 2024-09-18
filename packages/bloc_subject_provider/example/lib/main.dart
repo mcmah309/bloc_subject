@@ -76,7 +76,7 @@ class MyHomePage extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => ref.read(blocSubjectProvider.bloc).addEvent(Event1(1)),
+        onPressed: () => ref.read(blocSubjectProvider.subject).addEvent(Event1(1)),
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
