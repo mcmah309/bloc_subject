@@ -27,11 +27,4 @@ class BlocSubjectProviderFamily<E, S, Arg>
               computeAllTransitiveDependencies(dependencies),
           debugGetCreateSourceHash: null,
         );
-
-  /// {@macro bloc_provider_family_scoped}
-  BlocSubjectProviderFamily.scoped(String name)
-      : this(
-          (ref, arg) => throw UnimplementedProviderError(name),
-          name: name,
-        );
 }

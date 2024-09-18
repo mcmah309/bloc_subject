@@ -321,13 +321,6 @@ class BlocSubjectProvider<E, S> extends _BlocSubjectProviderBase<E, S>
     super.argument,
   });
 
-  /// {@macro bloc_provider_scoped}
-  BlocSubjectProvider.scoped(String name)
-      : this(
-          (ref) => throw UnimplementedProviderError<BlocSubjectProvider<E, S>>(name),
-          name: name,
-        );
-
   /// {@macro riverpod.autoDispose}
   static const autoDispose = AutoDisposeBlocSubjectProviderBuilder();
 

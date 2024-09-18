@@ -30,17 +30,6 @@ class AutoDisposeBlocSubjectProviderFamily<E, S, Arg>
               computeAllTransitiveDependencies(dependencies),
         );
 
-  /// {@macro riverbloc.auto_dispose_bloc_provider_family_scoped}
-  AutoDisposeBlocSubjectProviderFamily.scoped(String name)
-      : this(
-          (ref, arg) {
-            throw UnimplementedProviderError<AutoDisposeBlocSubjectProvider<E, S>>(
-              name,
-            );
-          },
-          name: name,
-        );
-
   /// {@macro riverpod.overridewith}
   Override overrideWith(
     BlocSubject<E,S> Function(AutoDisposeBlocSubjectProviderRef<E, S> ref, Arg arg) create,

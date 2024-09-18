@@ -36,16 +36,6 @@ class AutoDisposeBlocSubjectProvider<E, S>
     super.argument,
   });
 
-  /// {@macro bloc_provider_scoped}
-  AutoDisposeBlocSubjectProvider.scoped(String name)
-      : this(
-          (ref) =>
-              throw UnimplementedProviderError<AutoDisposeBlocSubjectProvider<E, S>>(
-            name,
-          ),
-          name: name,
-        );
-
   /// {@macro riverpod.family}
   static const family = AutoDisposeStateNotifierProviderFamily.new;
 
