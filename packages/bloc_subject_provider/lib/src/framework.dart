@@ -8,10 +8,9 @@ import 'package:riverpod/src/listenable.dart';
 import 'package:riverpod/src/result.dart';
 import 'package:riverpod/src/run_guarded.dart';
 
-part 'auto_dispose.dart';
-part 'auto_dispose_bloc_provider_family.dart';
-part 'bloc_notifier_provider.dart';
+part 'auto_dispose_subject_provider.dart';
+part 'auto_dispose_bloc_subject_provider_family.dart';
+part 'bloc_subject_provider_parts.dart';
 part 'bloc_provider.dart';
-part 'bloc_provider_family.dart';
-part 'bloc_provider_state.dart';
+part 'bloc_subject_provider_family.dart';
 part 'builders.dart';
