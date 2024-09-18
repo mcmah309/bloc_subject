@@ -1,6 +1,6 @@
 name: bloc_subject_provider
-description: "A new Flutter package project."
-version: 0.0.1
+description: Adds a riverpod provider for BlocSubject 
+version: 0.1.0
 homepage:
 
 environment:
@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_riverpod: ^2.5.1
 
 dev_dependencies:
   flutter_test:
