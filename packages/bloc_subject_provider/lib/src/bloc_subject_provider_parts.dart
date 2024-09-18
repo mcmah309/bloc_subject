@@ -7,17 +7,17 @@ abstract class BlocSubjectProviderRef<E, S> implements Ref<S> {
   /// The [Bloc] currently exposed by this provider.
   ///
   /// Cannot be accessed while creating the provider.
-  BlocSubject<E,S> get bloc;
+  BlocSubject<E, S> get bloc;
 }
 
 /// The element of [StateNotifierProvider].
-class BlocSubjectProviderElement<E, S>
-    extends ProviderElementBase<S> implements BlocSubjectProviderRef<E, S> {
+class BlocSubjectProviderElement<E, S> extends ProviderElementBase<S>
+    implements BlocSubjectProviderRef<E, S> {
   BlocSubjectProviderElement._(_BlocSubjectProviderBase<E, S> super.provider);
 
   @override
-  BlocSubject<E,S> get bloc => _blocNotifier.value;
-  final _blocNotifier = ProxyElementValueNotifier<BlocSubject<E,S>>();
+  BlocSubject<E, S> get bloc => _blocNotifier.value;
+  final _blocNotifier = ProxyElementValueNotifier<BlocSubject<E, S>>();
 
   void Function()? _removeListener;
 
@@ -68,10 +68,10 @@ class BlocSubjectProviderElement<E, S>
   }
 }
 
-ProviderElementProxy<S, BlocSubject<E,S>> _notifier<E, S>(
+ProviderElementProxy<S, BlocSubject<E, S>> _notifier<E, S>(
   _BlocSubjectProviderBase<E, S> that,
 ) {
-  return ProviderElementProxy<S, BlocSubject<E,S>>(
+  return ProviderElementProxy<S, BlocSubject<E, S>>(
     that,
     (element) {
       return (element as BlocSubjectProviderElement<E, S>)._blocNotifier;
@@ -80,8 +80,7 @@ ProviderElementProxy<S, BlocSubject<E,S>> _notifier<E, S>(
 }
 
 // ignore: subtype_of_sealed_class
-abstract class _BlocSubjectProviderBase<E, S>
-    extends ProviderBase<S> {
+abstract class _BlocSubjectProviderBase<E, S> extends ProviderBase<S> {
   const _BlocSubjectProviderBase({
     required super.name,
     required super.from,
@@ -106,7 +105,7 @@ abstract class _BlocSubjectProviderBase<E, S>
   /// changes.
   /// This may happen if the provider is refreshed or one of its dependencies
   /// has changes.
-  ProviderListenable<BlocSubject<E,S>> get bloc;
+  ProviderListenable<BlocSubject<E, S>> get bloc;
 
-  BlocSubject<E,S> _create(covariant BlocSubjectProviderElement<E, S> ref);
+  BlocSubject<E, S> _create(covariant BlocSubjectProviderElement<E, S> ref);
 }

@@ -13,7 +13,6 @@ class SubjectClosed extends BlocSubjectException {
   const SubjectClosed() : super("Subject is closed");
 }
 
-
 class NoInitialValue extends BlocSubjectException {
   const NoInitialValue() : super("State must have initial value");
 }

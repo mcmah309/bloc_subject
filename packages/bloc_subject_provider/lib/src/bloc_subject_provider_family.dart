@@ -14,8 +14,12 @@ part of 'framework.dart';
 /// Otherwise, it will throw an [UnimplementedProviderError].
 /// {@endtemplate}
 @sealed
-class BlocSubjectProviderFamily<E, S, Arg>
-    extends FamilyBase<BlocSubjectProviderRef<E, S>, S, Arg, BlocSubject<E,S>, BlocSubjectProvider<E, S>> {
+class BlocSubjectProviderFamily<E, S, Arg> extends FamilyBase<
+    BlocSubjectProviderRef<E, S>,
+    S,
+    Arg,
+    BlocSubject<E, S>,
+    BlocSubjectProvider<E, S>> {
   /// The [Family] of [BlocSubjectProvider].
   BlocSubjectProviderFamily(
     super.create, {

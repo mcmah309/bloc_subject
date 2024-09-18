@@ -7,7 +7,8 @@ import 'package:rxdart/subjects.dart';
 import 'package:rxdart/transformers.dart';
 
 /// Handler for [Event]s.
-typedef Handler<Event, State> = FutureOr<State?> Function(Event event, State state);
+typedef Handler<Event, State> = FutureOr<State?> Function(
+    Event event, State state);
 
 /// {@template empty_handler}
 /// Empty [State] handler.
@@ -29,13 +30,18 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   static EmptyHandler defaultEmptyHandler = (event) => throw NoInitialValue();
 
   final BehaviorSubject<State> _states; // in/out
-  final BehaviorSubject<Event> _events = BehaviorSubject(); // in, all events get added here
+  final BehaviorSubject<Event> _events =
+      BehaviorSubject(); // in, all events get added here
   final Set<StreamSubscription<Event>> _additionalEventSubscriptions = {};
   StreamSubscription<State>? _transformSubscription;
 
-  BlocSubject._(this._states, Handler<Event, State> handler,
-      EmptyHandler<Event, State>? emptyHandler, EventsModifier<Event>? eventsModifier) {
-    _eventHandler(handler, emptyHandler: emptyHandler, eventsModifier: eventsModifier);
+  BlocSubject._(
+      this._states,
+      Handler<Event, State> handler,
+      EmptyHandler<Event, State>? emptyHandler,
+      EventsModifier<Event>? eventsModifier) {
+    _eventHandler(handler,
+        emptyHandler: emptyHandler, eventsModifier: eventsModifier);
   }
 
   factory BlocSubject({
@@ -92,15 +98,16 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     void Function()? onCancel,
     bool sync = false,
   }) {
-    final BehaviorSubject<State> behavior =
-        BehaviorSubject.seeded(val, onListen: onListen, onCancel: onCancel, sync: sync);
+    final BehaviorSubject<State> behavior = BehaviorSubject.seeded(val,
+        onListen: onListen, onCancel: onCancel, sync: sync);
     return BlocSubject._(behavior, handler, null, eventsModifier);
   }
 
   //************************************************************************//
 
   void _eventHandler(Handler<Event, State> handler,
-      {EmptyHandler<Event, State>? emptyHandler, EventsModifier<Event>? eventsModifier}) {
+      {EmptyHandler<Event, State>? emptyHandler,
+      EventsModifier<Event>? eventsModifier}) {
     if (_transformSubscription != null) {
       _transformSubscription!.cancel();
     }
@@ -325,12 +332,14 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   Future<State> get first => _states.first;
 
   @override
-  Future<State> firstWhere(bool Function(State element) test, {State Function()? orElse}) {
+  Future<State> firstWhere(bool Function(State element) test,
+      {State Function()? orElse}) {
     return _states.firstWhere(test, orElse: orElse);
   }
 
   @override
-  Future<S> fold<S>(S initialValue, S Function(S previous, State element) combine) {
+  Future<S> fold<S>(
+      S initialValue, S Function(S previous, State element) combine) {
     return _states.fold(initialValue, combine);
   }
 
@@ -340,7 +349,8 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   }
 
   @override
-  Stream<State> handleError(Function onError, {bool Function(dynamic error)? test}) {
+  Stream<State> handleError(Function onError,
+      {bool Function(dynamic error)? test}) {
     return _states.handleError(onError, test: test);
   }
 
@@ -377,7 +387,8 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   StreamNotification<State>? get lastEventOrNull => _states.lastEventOrNull;
 
   @override
-  Future<State> lastWhere(bool Function(State element) test, {State Function()? orElse}) {
+  Future<State> lastWhere(bool Function(State element) test,
+      {State Function()? orElse}) {
     return _states.lastWhere(test, orElse: orElse);
   }
 
@@ -387,7 +398,8 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   @override
   StreamSubscription<State> listen(void Function(State value)? onData,
       {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return _states.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return _states.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   @override
@@ -419,7 +431,8 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   Future<State> get single => _states.single;
 
   @override
-  Future<State> singleWhere(bool Function(State element) test, {State Function()? orElse}) {
+  Future<State> singleWhere(bool Function(State element) test,
+      {State Function()? orElse}) {
     return _states.singleWhere(test, orElse: orElse);
   }
 
@@ -453,7 +466,8 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
   }
 
   @override
-  Stream<State> timeout(Duration timeLimit, {void Function(EventSink<State> sink)? onTimeout}) {
+  Stream<State> timeout(Duration timeLimit,
+      {void Function(EventSink<State> sink)? onTimeout}) {
     return _states.timeout(timeLimit, onTimeout: onTimeout);
   }
 

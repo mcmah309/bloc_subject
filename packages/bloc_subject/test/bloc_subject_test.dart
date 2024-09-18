@@ -125,7 +125,8 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 100));
     expect(subject.value, isA<C>());
 
-    subject = BlocSubject.fromBehavior(BehaviorSubject.seeded(A()), handler: eventHandler);
+    subject = BlocSubject.fromBehavior(BehaviorSubject.seeded(A()),
+        handler: eventHandler);
     expect(subject.value, isA<A>());
     subject.addEvent(X());
     await Future.delayed(const Duration(milliseconds: 100));
@@ -204,8 +205,8 @@ void main() {
 
     subject = BlocSubject.fromValue(B(),
         handler: eventHandler,
-        eventsModifier: (events) =>
-            events.throttle((_) => TimerStream(null, Duration(milliseconds: 300))));
+        eventsModifier: (events) => events
+            .throttle((_) => TimerStream(null, Duration(milliseconds: 300))));
     expect(subject.value, isA<B>());
     subject.addEvent(X());
     await Future.delayed(Duration(milliseconds: 200));
@@ -220,12 +221,13 @@ void main() {
     expect(last, 2,
         reason:
             "300 milli between requests. All requests done in 400 milli. Only Called once, plus the original");
-    expect(subject.value, isA<B>(), reason: "Last call in the 'no call' throttle time");
+    expect(subject.value, isA<B>(),
+        reason: "Last call in the 'no call' throttle time");
 
     subject = BlocSubject.fromValue(B(),
         handler: eventHandler,
-        eventsModifier: (events) =>
-            events.debounce((_) => TimerStream(null, Duration(milliseconds: 300))));
+        eventsModifier: (events) => events
+            .debounce((_) => TimerStream(null, Duration(milliseconds: 300))));
     expect(subject.value, isA<B>());
     subject.addEvent(X());
     await Future.delayed(Duration(milliseconds: 200));

@@ -41,10 +41,10 @@ class BlocSubjectProvider<E, S> extends _BlocSubjectProviderBase<E, S>
   /// {@macro riverpod.family}
   static const family = BlocSubjectProviderFamilyBuilder();
 
-  final BlocSubject<E,S> Function(BlocSubjectProviderRef<E, S> ref) _createFn;
+  final BlocSubject<E, S> Function(BlocSubjectProviderRef<E, S> ref) _createFn;
 
   @override
-  BlocSubject<E,S> _create(BlocSubjectProviderElement<E, S> ref) {
+  BlocSubject<E, S> _create(BlocSubjectProviderElement<E, S> ref) {
     return _createFn(ref);
   }
 
@@ -54,10 +54,11 @@ class BlocSubjectProvider<E, S> extends _BlocSubjectProviderBase<E, S>
   }
 
   @override
-  late final AlwaysAliveRefreshable<BlocSubject<E,S>> bloc = _notifier(this);
+  late final AlwaysAliveRefreshable<BlocSubject<E, S>> bloc = _notifier(this);
 
   /// {@macro riverpod.overridewith}
-  Override overrideWith(Create<BlocSubject<E,S>, BlocSubjectProviderRef<E, S>> create) {
+  Override overrideWith(
+      Create<BlocSubject<E, S>, BlocSubjectProviderRef<E, S>> create) {
     return ProviderOverride(
       origin: this,
       override: BlocSubjectProvider<E, S>.internal(

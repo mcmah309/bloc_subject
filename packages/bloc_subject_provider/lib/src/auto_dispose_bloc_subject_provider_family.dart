@@ -9,8 +9,8 @@ part of 'framework.dart';
 /// {@endtemplate}
 @sealed
 class AutoDisposeBlocSubjectProviderFamily<E, S, Arg>
-    extends AutoDisposeFamilyBase<AutoDisposeBlocSubjectProviderRef<E, S>, S, Arg, BlocSubject<E,S>,
-        AutoDisposeBlocSubjectProvider<E, S>> {
+    extends AutoDisposeFamilyBase<AutoDisposeBlocSubjectProviderRef<E, S>, S,
+        Arg, BlocSubject<E, S>, AutoDisposeBlocSubjectProvider<E, S>> {
   /// The [Family] of [AutoDisposeBlocSubjectProvider].
   AutoDisposeBlocSubjectProviderFamily(
     super.create, {
@@ -25,7 +25,9 @@ class AutoDisposeBlocSubjectProviderFamily<E, S, Arg>
 
   /// {@macro riverpod.overridewith}
   Override overrideWith(
-    BlocSubject<E,S> Function(AutoDisposeBlocSubjectProviderRef<E, S> ref, Arg arg) create,
+    BlocSubject<E, S> Function(
+            AutoDisposeBlocSubjectProviderRef<E, S> ref, Arg arg)
+        create,
   ) {
     return FamilyOverrideImpl<S, Arg, AutoDisposeBlocSubjectProvider<E, S>>(
       this,

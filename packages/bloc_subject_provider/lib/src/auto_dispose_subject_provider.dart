@@ -39,10 +39,11 @@ class AutoDisposeBlocSubjectProvider<E, S>
   /// {@macro riverpod.family}
   static const family = AutoDisposeStateNotifierProviderFamily.new;
 
-  final BlocSubject<E,S> Function(AutoDisposeBlocSubjectProviderRef<E, S> ref) _createFn;
+  final BlocSubject<E, S> Function(AutoDisposeBlocSubjectProviderRef<E, S> ref)
+      _createFn;
 
   @override
-  BlocSubject<E,S> _create(AutoDisposeBlocSubjectProviderElement<E, S> ref) {
+  BlocSubject<E, S> _create(AutoDisposeBlocSubjectProviderElement<E, S> ref) {
     return _createFn(ref);
   }
 
@@ -52,11 +53,11 @@ class AutoDisposeBlocSubjectProvider<E, S>
   }
 
   @override
-  late final Refreshable<BlocSubject<E,S>> bloc = _notifier(this);
+  late final Refreshable<BlocSubject<E, S>> bloc = _notifier(this);
 
   /// {@macro riverpod.overridewith}
   Override overrideWith(
-    Create<BlocSubject<E,S>, AutoDisposeBlocSubjectProviderRef<E, S>> create,
+    Create<BlocSubject<E, S>, AutoDisposeBlocSubjectProviderRef<E, S>> create,
   ) {
     return ProviderOverride(
       origin: this,

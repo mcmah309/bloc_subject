@@ -9,7 +9,7 @@ class BlocSubjectProviderFamilyBuilder {
 
   /// {@macro riverpod.family}
   BlocSubjectProviderFamily<E, S, Arg> call<E, S, Arg>(
-    FamilyCreate<BlocSubject<E,S>, BlocSubjectProviderRef<E, S>, Arg> create, {
+    FamilyCreate<BlocSubject<E, S>, BlocSubjectProviderRef<E, S>, Arg> create, {
     String? name,
     List<ProviderOrFamily>? dependencies,
   }) {
@@ -33,7 +33,7 @@ class AutoDisposeBlocSubjectProviderBuilder {
 
   /// {@macro riverpod.autoDispose}
   AutoDisposeBlocSubjectProvider<E, S> call<E, S>(
-    Create<BlocSubject<E,S>, AutoDisposeBlocSubjectProviderRef<E, S>> create, {
+    Create<BlocSubject<E, S>, AutoDisposeBlocSubjectProviderRef<E, S>> create, {
     String? name,
     List<ProviderOrFamily>? dependencies,
   }) {
@@ -57,7 +57,9 @@ class AutoDisposeBlocSubjectProviderFamilyBuilder {
 
   /// {@macro riverpod.family}
   AutoDisposeBlocSubjectProviderFamily<E, S, Arg> call<E, S, Arg>(
-    FamilyCreate<BlocSubject<E,S>, AutoDisposeBlocSubjectProviderRef<E, S>, Arg> create, {
+    FamilyCreate<BlocSubject<E, S>, AutoDisposeBlocSubjectProviderRef<E, S>,
+            Arg>
+        create, {
     String? name,
     List<ProviderOrFamily>? dependencies,
   }) {
