@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bloc_subject/src/exceptions.dart';
+import 'exceptions.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 import 'package:rxdart/subjects.dart';

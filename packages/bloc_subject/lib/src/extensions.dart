@@ -1,4 +1,4 @@
-import 'package:bloc_subject/bloc_subject.dart';
+import '../bloc_subject.dart';
 import 'package:rxdart/subjects.dart';
 
 extension BlocRxDartOnBehaviorSubject<State> on BehaviorSubject<State> {
