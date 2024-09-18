@@ -1,5 +1,4 @@
-/// Riverbloc exposes providers for [Bloc] and [Cubit] instances bases in
-/// `riverpod` package instead of `provider` package.
+/// bloc_subject_provider exposes a riverpod providers for [BlocSubject].
 ///
 /// Providers:
 /// - [BlocSubjectProvider]
@@ -12,4 +11,3 @@ export 'package:bloc_subject/bloc_subject.dart';
 export 'package:riverpod/riverpod.dart';
 
 export 'src/framework.dart';
-export 'src/when_extensions.dart';

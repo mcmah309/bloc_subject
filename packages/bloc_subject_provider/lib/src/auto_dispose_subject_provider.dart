@@ -7,7 +7,7 @@ abstract class AutoDisposeBlocSubjectProviderRef<E, S>
     extends BlocSubjectProviderRef<E, S> implements AutoDisposeRef<S> {}
 
 // ignore: subtype_of_sealed_class
-/// {@macro bloc_provider_auto_dispose}
+/// {@macro bloc_subject_provider_auto_dispose}
 class AutoDisposeBlocSubjectProvider<E, S>
     extends _BlocSubjectProviderBase<E, S> {
   /// {@macro riverpod.statenotifierprovider}

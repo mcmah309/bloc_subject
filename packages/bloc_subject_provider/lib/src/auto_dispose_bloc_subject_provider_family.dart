@@ -3,16 +3,9 @@
 part of 'framework.dart';
 
 // ignore: subtype_of_sealed_class
-/// {@template riverbloc.auto_dispose_bloc_provider.family}
+/// {@template bloc_subject.auto_dispose_bloc_subject_provider.family}
 /// A class that allows building a [AutoDisposeBlocSubjectProvider] from an
 /// external parameter.
-/// {@endtemplate}
-///
-/// {@template riverbloc.auto_dispose_bloc_provider_family_scoped}
-/// # AutoDisposeBlocSubjectProviderFamily.scoped
-/// Creates an [AutoDisposeBlocSubjectProvider] that will be scoped and must be
-/// overridden.
-/// Otherwise, it will throw an [UnimplementedProviderError].
 /// {@endtemplate}
 @sealed
 class AutoDisposeBlocSubjectProviderFamily<E, S, Arg>

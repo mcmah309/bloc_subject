@@ -11,6 +11,6 @@ import 'package:riverpod/src/run_guarded.dart';
 part 'auto_dispose_subject_provider.dart';
 part 'auto_dispose_bloc_subject_provider_family.dart';
 part 'bloc_subject_provider_parts.dart';
-part 'bloc_provider.dart';
+part 'bloc_subject_provider.dart';
 part 'bloc_subject_provider_family.dart';
 part 'builders.dart';

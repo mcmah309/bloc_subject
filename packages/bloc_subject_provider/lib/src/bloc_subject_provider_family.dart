@@ -3,12 +3,12 @@
 part of 'framework.dart';
 
 // ignore: subtype_of_sealed_class
-/// {@template bloc_provider_family}
+/// {@template bloc_subject_provider_family}
 /// A class that allows building a [BlocSubjectProvider] from an external
 /// parameter.
 /// {@endtemplate}
 ///
-/// {@template bloc_provider_family_scoped}
+/// {@template bloc_subject_provider_family_scoped}
 /// # BlocSubjectProviderFamily.scoped
 /// Creates a [BlocSubjectProvider] that will be scoped and must be overridden.
 /// Otherwise, it will throw an [UnimplementedProviderError].
