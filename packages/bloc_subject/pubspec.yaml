@@ -1,6 +1,6 @@
 name: bloc_subject
 description: Reactive event based state management. Implementation of the Bloc pattern as an rxdart subject (BlocSubject).
-version: 0.2.0
+version: 0.3.0
 repository: https://github.com/mcmah309/bloc_subject/
 # repository: https://github.com/my_org/my_repo
 
@@ -9,7 +9,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  rxdart: 0.28.0
+  rxdart: ^0.28.0
 
 dev_dependencies:
   lints: ^3.0.0
