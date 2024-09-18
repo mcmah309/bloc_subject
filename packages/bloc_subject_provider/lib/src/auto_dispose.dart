@@ -3,16 +3,16 @@
 part of 'framework.dart';
 
 /// {@macro riverpod.providerrefbase}
-abstract class AutoDisposeBlocProviderRef<E, S>
-    extends BlocProviderRef<E, S> implements AutoDisposeRef<S> {}
+abstract class AutoDisposeBlocSubjectProviderRef<E, S>
+    extends BlocSubjectProviderRef<E, S> implements AutoDisposeRef<S> {}
 
 // ignore: subtype_of_sealed_class
 /// {@macro bloc_provider_auto_dispose}
-class AutoDisposeBlocProvider<E, S>
-    extends _BlocProviderBase<E, S> {
+class AutoDisposeBlocSubjectProvider<E, S>
+    extends _BlocSubjectProviderBase<E, S> {
   /// {@macro riverpod.statenotifierprovider}
 
-  AutoDisposeBlocProvider(
+  AutoDisposeBlocSubjectProvider(
     this._createFn, {
     super.name,
     super.dependencies,
@@ -26,7 +26,7 @@ class AutoDisposeBlocProvider<E, S>
 
   /// An implementation detail of Riverpod
   @internal
-  AutoDisposeBlocProvider.internal(
+  AutoDisposeBlocSubjectProvider.internal(
     this._createFn, {
     required super.name,
     required super.dependencies,
@@ -37,10 +37,10 @@ class AutoDisposeBlocProvider<E, S>
   });
 
   /// {@macro bloc_provider_scoped}
-  AutoDisposeBlocProvider.scoped(String name)
+  AutoDisposeBlocSubjectProvider.scoped(String name)
       : this(
           (ref) =>
-              throw UnimplementedProviderError<AutoDisposeBlocProvider<E, S>>(
+              throw UnimplementedProviderError<AutoDisposeBlocSubjectProvider<E, S>>(
             name,
           ),
           name: name,
@@ -49,16 +49,16 @@ class AutoDisposeBlocProvider<E, S>
   /// {@macro riverpod.family}
   static const family = AutoDisposeStateNotifierProviderFamily.new;
 
-  final BlocSubject<E,S> Function(AutoDisposeBlocProviderRef<E, S> ref) _createFn;
+  final BlocSubject<E,S> Function(AutoDisposeBlocSubjectProviderRef<E, S> ref) _createFn;
 
   @override
-  BlocSubject<E,S> _create(AutoDisposeBlocProviderElement<E, S> ref) {
+  BlocSubject<E,S> _create(AutoDisposeBlocSubjectProviderElement<E, S> ref) {
     return _createFn(ref);
   }
 
   @override
-  AutoDisposeBlocProviderElement<E, S> createElement() {
-    return AutoDisposeBlocProviderElement._(this);
+  AutoDisposeBlocSubjectProviderElement<E, S> createElement() {
+    return AutoDisposeBlocSubjectProviderElement._(this);
   }
 
   @override
@@ -66,11 +66,11 @@ class AutoDisposeBlocProvider<E, S>
 
   /// {@macro riverpod.overridewith}
   Override overrideWith(
-    Create<BlocSubject<E,S>, AutoDisposeBlocProviderRef<E, S>> create,
+    Create<BlocSubject<E,S>, AutoDisposeBlocSubjectProviderRef<E, S>> create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: AutoDisposeBlocProvider<E, S>.internal(
+      override: AutoDisposeBlocSubjectProvider<E, S>.internal(
         create,
         from: from,
         argument: argument,
@@ -83,13 +83,13 @@ class AutoDisposeBlocProvider<E, S>
   }
 }
 
-/// The element of [AutoDisposeBlocProvider].
-class AutoDisposeBlocProviderElement<E, S>
-    extends BlocProviderElement<E, S>
+/// The element of [AutoDisposeBlocSubjectProvider].
+class AutoDisposeBlocSubjectProviderElement<E, S>
+    extends BlocSubjectProviderElement<E, S>
     with AutoDisposeProviderElementMixin<S>
-    implements AutoDisposeBlocProviderRef<E, S> {
-  /// The [ProviderElementBase] for [BlocProvider]
-  AutoDisposeBlocProviderElement._(
-    AutoDisposeBlocProvider<E, S> super.provider,
+    implements AutoDisposeBlocSubjectProviderRef<E, S> {
+  /// The [ProviderElementBase] for [BlocSubjectProvider]
+  AutoDisposeBlocSubjectProviderElement._(
+    AutoDisposeBlocSubjectProvider<E, S> super.provider,
   ) : super._();
 }

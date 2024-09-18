@@ -3,7 +3,7 @@
 part of 'framework.dart';
 
 /// {@macro riverpod.providerrefbase}
-abstract class BlocProviderRef<E, S> implements Ref<S> {
+abstract class BlocSubjectProviderRef<E, S> implements Ref<S> {
   /// The [Bloc] currently exposed by this provider.
   ///
   /// Cannot be accessed while creating the provider.
@@ -11,9 +11,9 @@ abstract class BlocProviderRef<E, S> implements Ref<S> {
 }
 
 /// The element of [StateNotifierProvider].
-class BlocProviderElement<E, S>
-    extends ProviderElementBase<S> implements BlocProviderRef<E, S> {
-  BlocProviderElement._(_BlocProviderBase<E, S> super.provider);
+class BlocSubjectProviderElement<E, S>
+    extends ProviderElementBase<S> implements BlocSubjectProviderRef<E, S> {
+  BlocSubjectProviderElement._(_BlocSubjectProviderBase<E, S> super.provider);
 
   @override
   BlocSubject<E,S> get bloc => _blocNotifier.value;
@@ -23,7 +23,7 @@ class BlocProviderElement<E, S>
 
   @override
   void create({required bool didChangeDependency}) {
-    final provider = this.provider as _BlocProviderBase<E, S>;
+    final provider = this.provider as _BlocSubjectProviderBase<E, S>;
 
     final notifier =
         _blocNotifier.result = Result.guard(() => provider._create(this));
@@ -69,20 +69,20 @@ class BlocProviderElement<E, S>
 }
 
 ProviderElementProxy<S, BlocSubject<E,S>> _notifier<E, S>(
-  _BlocProviderBase<E, S> that,
+  _BlocSubjectProviderBase<E, S> that,
 ) {
   return ProviderElementProxy<S, BlocSubject<E,S>>(
     that,
     (element) {
-      return (element as BlocProviderElement<E, S>)._blocNotifier;
+      return (element as BlocSubjectProviderElement<E, S>)._blocNotifier;
     },
   );
 }
 
 // ignore: subtype_of_sealed_class
-abstract class _BlocProviderBase<E, S>
+abstract class _BlocSubjectProviderBase<E, S>
     extends ProviderBase<S> {
-  const _BlocProviderBase({
+  const _BlocSubjectProviderBase({
     required super.name,
     required super.from,
     required super.argument,
@@ -108,5 +108,5 @@ abstract class _BlocProviderBase<E, S>
   /// has changes.
   ProviderListenable<BlocSubject<E,S>> get bloc;
 
-  BlocSubject<E,S> _create(covariant BlocProviderElement<E, S> ref);
+  BlocSubject<E,S> _create(covariant BlocSubjectProviderElement<E, S> ref);
 }

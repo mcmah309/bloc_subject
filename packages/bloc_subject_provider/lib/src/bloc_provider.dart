@@ -4,7 +4,7 @@ part of 'framework.dart';
 
 // ignore: subtype_of_sealed_class
 /// {@template bloc_provider}
-/// # BlocProvider
+/// # BlocSubjectProvider
 ///
 /// Similar to [StateNotifierProvider] but for [BlocBase] ([Bloc] and [Cubit])
 ///
@@ -16,7 +16,7 @@ part of 'framework.dart';
 /// }
 ///
 /// final counterCubitProvider =
-///     BlocProvider<CounterCubit, int>((ref) => CounterCubit(0));
+///     BlocSubjectProvider<CounterCubit, int>((ref) => CounterCubit(0));
 ///
 /// class MyHomePage extends ConsumerWidget {
 ///   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -64,7 +64,7 @@ part of 'framework.dart';
 /// {@endtemplate}
 ///
 /// {@template bloc_provider_notifier}
-/// ## `BlocProvider.notifier`
+/// ## `BlocSubjectProvider.notifier`
 /// `BlocBase` object getter, it can be either `Bloc`
 /// or `Cubit`.
 ///
@@ -75,7 +75,7 @@ part of 'framework.dart';
 ///   return ElevatedButton(
 ///     style: style,
 ///     onPressed: () {
-///       ref.read(counterBlocProvider.notifier).increment();
+///       ref.read(counterBlocSubjectProvider.notifier).increment();
 ///     },
 ///     child: const Text('Press me'),
 ///   );
@@ -84,7 +84,7 @@ part of 'framework.dart';
 /// {@endtemplate}
 ///
 /// {@template bloc_provider_bloc}
-/// ## `BlocProvider.bloc`
+/// ## `BlocSubjectProvider.bloc`
 /// `BlocBase` object getter, it can be either `Bloc`
 /// or `Cubit`.
 ///
@@ -95,7 +95,7 @@ part of 'framework.dart';
 ///   return ElevatedButton(
 ///     style: style,
 ///     onPressed: () {
-///       ref.read(counterBlocProvider.bloc).increment();
+///       ref.read(counterBlocSubjectProvider.bloc).increment();
 ///     },
 ///     child: const Text('Press me'),
 ///   );
@@ -104,17 +104,17 @@ part of 'framework.dart';
 /// {@endtemplate}
 ///
 /// {@template bloc_provider_scoped}
-/// Creates a [BlocProvider] that needs to be overridden
+/// Creates a [BlocSubjectProvider] that needs to be overridden
 ///
 /// With pure dart:
 ///
 /// ```dart
-/// final blocProvider = BlocProvider<CounterBloc, int>.scoped('blocProvider');
+/// final blocProvider = BlocSubjectProvider<CounterBloc, int>.scoped('blocProvider');
 ///
 /// final container = ProviderContainer(
 ///   overrides: [
 ///     blocProvider
-///         .overrideWithProvider(BlocProvider((ref) => CounterBloc(0))),
+///         .overrideWithProvider(BlocSubjectProvider((ref) => CounterBloc(0))),
 ///   ],
 /// );
 ///
@@ -124,7 +124,7 @@ part of 'framework.dart';
 /// With Flutter:
 ///
 /// ```dart
-/// final blocProvider = BlocProvider<CounterBloc, int>.scoped('blocProvider');
+/// final blocProvider = BlocSubjectProvider<CounterBloc, int>.scoped('blocProvider');
 ///
 /// class MyApp extends StatelessWidget {
 ///   const MyApp({Key? key}) : super(key: key);
@@ -134,7 +134,7 @@ part of 'framework.dart';
 ///     return ProviderScope(
 ///       overrides: [
 ///         blocProvider
-///             .overrideWithProvider(BlocProvider((ref) => CounterBloc(0))),
+///             .overrideWithProvider(BlocSubjectProvider((ref) => CounterBloc(0))),
 ///       ],
 ///       child: Consumer(
 ///         builder: (context, ref, child) {
@@ -149,14 +149,14 @@ part of 'framework.dart';
 /// {@endtemplate}
 ///
 /// {@template bloc_provider_override_with_provider}
-/// ## `BlocProvider.overrideWithProvider`
+/// ## `BlocSubjectProvider.overrideWithProvider`
 ///
 /// With pure dart:
 ///
 /// ```dart
-/// final counterProvider = BlocProvider((ref) => CounterCubit(0));
+/// final counterProvider = BlocSubjectProvider((ref) => CounterCubit(0));
 /// final counterCubit = CounterCubit(3);
-/// final counterProvider2 = BlocProvider((ref) => counterCubit);
+/// final counterProvider2 = BlocSubjectProvider((ref) => counterCubit);
 /// final container = ProviderContainer(
 ///   overrides: [
 ///     counterProvider.overrideWithProvider(counterProvider2),
@@ -173,9 +173,9 @@ part of 'framework.dart';
 /// With Flutter:
 ///
 /// ```dart
-/// final counterProvider = BlocProvider((ref) => CounterCubit(0));
+/// final counterProvider = BlocSubjectProvider((ref) => CounterCubit(0));
 /// final counterCubit = CounterCubit(3);
-/// final counterProvider2 = BlocProvider((ref) => counterCubit);
+/// final counterProvider2 = BlocSubjectProvider((ref) => counterCubit);
 ///
 /// ProviderScope(
 ///   overrides: [
@@ -192,12 +192,12 @@ part of 'framework.dart';
 /// {@endtemplate}
 ///
 /// {@template bloc_provider_override_with_value}
-/// ## `BlocProvider.overrideWithValue`
+/// ## `BlocSubjectProvider.overrideWithValue`
 ///
 /// With pure dart:
 ///
 /// ```dart
-/// final counterProvider = BlocProvider((ref) => CounterCubit(0));
+/// final counterProvider = BlocSubjectProvider((ref) => CounterCubit(0));
 /// final counterCubit = CounterCubit(3);
 /// final container = ProviderContainer(
 ///   overrides: [
@@ -215,7 +215,7 @@ part of 'framework.dart';
 /// With Flutter:
 ///
 /// ```dart
-/// final counterProvider = BlocProvider((ref) => CounterCubit(0));
+/// final counterProvider = BlocSubjectProvider((ref) => CounterCubit(0));
 /// final counterCubit = CounterCubit(3);
 ///
 /// ProviderScope(
@@ -237,16 +237,16 @@ part of 'framework.dart';
 /// Marks the provider as automatically disposed when no-longer listened.
 ///
 /// ```dart
-/// final counterProvider1 = BlocProvider.autoDispose((ref) => CounterCubit(0));
+/// final counterProvider1 = BlocSubjectProvider.autoDispose((ref) => CounterCubit(0));
 ///
-/// final counterProvider2 - AutoDisposeBlocProvider((ref) => CounterCubit(0));
+/// final counterProvider2 - AutoDisposeBlocSubjectProvider((ref) => CounterCubit(0));
 /// ```
 /// The `maintainState` property is a boolean (`false` by default) that allows
 /// the provider to tell Riverpod if the state of the provider should be
 /// preserved even if no-longer listened.
 ///
 /// ```dart
-/// final myProvider = BlocProvider.autoDispose((ref) {
+/// final myProvider = BlocSubjectProvider.autoDispose((ref) {
 ///   final asyncValue = ref.watch(myFutureProvider);
 ///   final firstState = asyncValue.data!.value;
 ///   ref.maintainState = true;
@@ -260,13 +260,13 @@ part of 'framework.dart';
 /// {@endtemplate}
 ///
 /// {@template bloc_provider_when}
-/// ## `BlocProvider.when`
+/// ## `BlocSubjectProvider.when`
 ///
 /// For conditional rebuilds, you can use the `when` property.
 ///
 /// ```dart
 /// ref.watch(
-///   counterBlocProvider
+///   counterBlocSubjectProvider
 ///     .when((previous, current) => current > previous)),
 /// );
 ///
@@ -282,7 +282,7 @@ part of 'framework.dart';
 ///
 /// ```dart
 /// ref.listen(
-///   counterBlocProvider
+///   counterBlocSubjectProvider
 ///     .when((previous, current) => current > previous)),
 /// );
 ///
@@ -294,10 +294,10 @@ part of 'framework.dart';
 /// );
 /// ```
 /// {@endtemplate}
-class BlocProvider<E, S> extends _BlocProviderBase<E, S>
+class BlocSubjectProvider<E, S> extends _BlocSubjectProviderBase<E, S>
     with AlwaysAliveProviderBase<S> {
   /// {@macro riverpod.statenotifierprovider}
-  BlocProvider(
+  BlocSubjectProvider(
     this._createFn, {
     super.name,
     super.dependencies,
@@ -311,7 +311,7 @@ class BlocProvider<E, S> extends _BlocProviderBase<E, S>
 
   /// An implementation detail of Riverpod
   @internal
-  BlocProvider.internal(
+  BlocSubjectProvider.internal(
     this._createFn, {
     required super.name,
     required super.dependencies,
@@ -322,38 +322,38 @@ class BlocProvider<E, S> extends _BlocProviderBase<E, S>
   });
 
   /// {@macro bloc_provider_scoped}
-  BlocProvider.scoped(String name)
+  BlocSubjectProvider.scoped(String name)
       : this(
-          (ref) => throw UnimplementedProviderError<BlocProvider<E, S>>(name),
+          (ref) => throw UnimplementedProviderError<BlocSubjectProvider<E, S>>(name),
           name: name,
         );
 
   /// {@macro riverpod.autoDispose}
-  static const autoDispose = AutoDisposeBlocProviderBuilder();
+  static const autoDispose = AutoDisposeBlocSubjectProviderBuilder();
 
   /// {@macro riverpod.family}
-  static const family = BlocProviderFamilyBuilder();
+  static const family = BlocSubjectProviderFamilyBuilder();
 
-  final BlocSubject<E,S> Function(BlocProviderRef<E, S> ref) _createFn;
+  final BlocSubject<E,S> Function(BlocSubjectProviderRef<E, S> ref) _createFn;
 
   @override
-  BlocSubject<E,S> _create(BlocProviderElement<E, S> ref) {
+  BlocSubject<E,S> _create(BlocSubjectProviderElement<E, S> ref) {
     return _createFn(ref);
   }
 
   @override
-  BlocProviderElement<E, S> createElement() {
-    return BlocProviderElement<E, S>._(this);
+  BlocSubjectProviderElement<E, S> createElement() {
+    return BlocSubjectProviderElement<E, S>._(this);
   }
 
   @override
   late final AlwaysAliveRefreshable<BlocSubject<E,S>> bloc = _notifier(this);
 
   /// {@macro riverpod.overridewith}
-  Override overrideWith(Create<BlocSubject<E,S>, BlocProviderRef<E, S>> create) {
+  Override overrideWith(Create<BlocSubject<E,S>, BlocSubjectProviderRef<E, S>> create) {
     return ProviderOverride(
       origin: this,
-      override: BlocProvider<E, S>.internal(
+      override: BlocSubjectProvider<E, S>.internal(
         create,
         from: from,
         argument: argument,

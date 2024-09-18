@@ -21,7 +21,7 @@ extension ProviderListenableWhenable<S> on ProviderListenable<S> {
   /// }
   ///
   /// final counterProvider =
-  ///     BlocProvider<CounterCubit, int>((ref) => CounterCubit(0));
+  ///     BlocSubjectProvider<CounterCubit, int>((ref) => CounterCubit(0));
   ///
   /// Consumer(
   ///   builder: (context, ref, __) {
@@ -60,7 +60,7 @@ extension AlwaysAliveProviderListenableWhenable<S>
   /// }
   ///
   /// final counterProvider =
-  ///     BlocProvider<CounterCubit, int>((ref) => CounterCubit(0));
+  ///     BlocSubjectProvider<CounterCubit, int>((ref) => CounterCubit(0));
   ///
   /// final previousOddCounterProvider = Provider((ref) {
   ///   final _counter = ref.watch(

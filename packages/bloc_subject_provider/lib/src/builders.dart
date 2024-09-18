@@ -2,18 +2,18 @@
 
 part of 'framework.dart';
 
-/// Builds a [BlocProviderFamily].
-class BlocProviderFamilyBuilder {
-  /// Builds a [BlocProviderFamily].
-  const BlocProviderFamilyBuilder();
+/// Builds a [BlocSubjectProviderFamily].
+class BlocSubjectProviderFamilyBuilder {
+  /// Builds a [BlocSubjectProviderFamily].
+  const BlocSubjectProviderFamilyBuilder();
 
   /// {@macro riverpod.family}
-  BlocProviderFamily<E, S, Arg> call<E, S, Arg>(
-    FamilyCreate<BlocSubject<E,S>, BlocProviderRef<E, S>, Arg> create, {
+  BlocSubjectProviderFamily<E, S, Arg> call<E, S, Arg>(
+    FamilyCreate<BlocSubject<E,S>, BlocSubjectProviderRef<E, S>, Arg> create, {
     String? name,
     List<ProviderOrFamily>? dependencies,
   }) {
-    return BlocProviderFamily(
+    return BlocSubjectProviderFamily(
       create,
       name: name,
       dependencies: dependencies,
@@ -21,23 +21,23 @@ class BlocProviderFamilyBuilder {
   }
 
   /// {@macro riverpod.autoDispose}
-  AutoDisposeBlocProviderFamilyBuilder get autoDispose {
-    return const AutoDisposeBlocProviderFamilyBuilder();
+  AutoDisposeBlocSubjectProviderFamilyBuilder get autoDispose {
+    return const AutoDisposeBlocSubjectProviderFamilyBuilder();
   }
 }
 
-/// Builds a [AutoDisposeBlocProvider].
-class AutoDisposeBlocProviderBuilder {
-  /// Builds a [AutoDisposeBlocProvider].
-  const AutoDisposeBlocProviderBuilder();
+/// Builds a [AutoDisposeBlocSubjectProvider].
+class AutoDisposeBlocSubjectProviderBuilder {
+  /// Builds a [AutoDisposeBlocSubjectProvider].
+  const AutoDisposeBlocSubjectProviderBuilder();
 
   /// {@macro riverpod.autoDispose}
-  AutoDisposeBlocProvider<E, S> call<E, S>(
-    Create<BlocSubject<E,S>, AutoDisposeBlocProviderRef<E, S>> create, {
+  AutoDisposeBlocSubjectProvider<E, S> call<E, S>(
+    Create<BlocSubject<E,S>, AutoDisposeBlocSubjectProviderRef<E, S>> create, {
     String? name,
     List<ProviderOrFamily>? dependencies,
   }) {
-    return AutoDisposeBlocProvider<E, S>(
+    return AutoDisposeBlocSubjectProvider<E, S>(
       create,
       name: name,
       dependencies: dependencies,
@@ -45,23 +45,23 @@ class AutoDisposeBlocProviderBuilder {
   }
 
   /// {@macro riverpod.family}
-  AutoDisposeBlocProviderFamilyBuilder get family {
-    return const AutoDisposeBlocProviderFamilyBuilder();
+  AutoDisposeBlocSubjectProviderFamilyBuilder get family {
+    return const AutoDisposeBlocSubjectProviderFamilyBuilder();
   }
 }
 
-/// The [Family] of [AutoDisposeBlocProvider].
-class AutoDisposeBlocProviderFamilyBuilder {
-  /// Builds a [AutoDisposeBlocProviderFamily].
-  const AutoDisposeBlocProviderFamilyBuilder();
+/// The [Family] of [AutoDisposeBlocSubjectProvider].
+class AutoDisposeBlocSubjectProviderFamilyBuilder {
+  /// Builds a [AutoDisposeBlocSubjectProviderFamily].
+  const AutoDisposeBlocSubjectProviderFamilyBuilder();
 
   /// {@macro riverpod.family}
-  AutoDisposeBlocProviderFamily<E, S, Arg> call<E, S, Arg>(
-    FamilyCreate<BlocSubject<E,S>, AutoDisposeBlocProviderRef<E, S>, Arg> create, {
+  AutoDisposeBlocSubjectProviderFamily<E, S, Arg> call<E, S, Arg>(
+    FamilyCreate<BlocSubject<E,S>, AutoDisposeBlocSubjectProviderRef<E, S>, Arg> create, {
     String? name,
     List<ProviderOrFamily>? dependencies,
   }) {
-    return AutoDisposeBlocProviderFamily<E, S, Arg>(
+    return AutoDisposeBlocSubjectProviderFamily<E, S, Arg>(
       create,
       name: name,
       dependencies: dependencies,

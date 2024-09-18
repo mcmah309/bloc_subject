@@ -4,37 +4,37 @@ part of 'framework.dart';
 
 // ignore: subtype_of_sealed_class
 /// {@template riverbloc.auto_dispose_bloc_provider.family}
-/// A class that allows building a [AutoDisposeBlocProvider] from an
+/// A class that allows building a [AutoDisposeBlocSubjectProvider] from an
 /// external parameter.
 /// {@endtemplate}
 ///
 /// {@template riverbloc.auto_dispose_bloc_provider_family_scoped}
-/// # AutoDisposeBlocProviderFamily.scoped
-/// Creates an [AutoDisposeBlocProvider] that will be scoped and must be
+/// # AutoDisposeBlocSubjectProviderFamily.scoped
+/// Creates an [AutoDisposeBlocSubjectProvider] that will be scoped and must be
 /// overridden.
 /// Otherwise, it will throw an [UnimplementedProviderError].
 /// {@endtemplate}
 @sealed
-class AutoDisposeBlocProviderFamily<E, S, Arg>
-    extends AutoDisposeFamilyBase<AutoDisposeBlocProviderRef<E, S>, S, Arg, BlocSubject<E,S>,
-        AutoDisposeBlocProvider<E, S>> {
-  /// The [Family] of [AutoDisposeBlocProvider].
-  AutoDisposeBlocProviderFamily(
+class AutoDisposeBlocSubjectProviderFamily<E, S, Arg>
+    extends AutoDisposeFamilyBase<AutoDisposeBlocSubjectProviderRef<E, S>, S, Arg, BlocSubject<E,S>,
+        AutoDisposeBlocSubjectProvider<E, S>> {
+  /// The [Family] of [AutoDisposeBlocSubjectProvider].
+  AutoDisposeBlocSubjectProviderFamily(
     super.create, {
     super.name,
     super.dependencies,
   }) : super(
-          providerFactory: AutoDisposeBlocProvider.internal,
+          providerFactory: AutoDisposeBlocSubjectProvider.internal,
           debugGetCreateSourceHash: null,
           allTransitiveDependencies:
               computeAllTransitiveDependencies(dependencies),
         );
 
   /// {@macro riverbloc.auto_dispose_bloc_provider_family_scoped}
-  AutoDisposeBlocProviderFamily.scoped(String name)
+  AutoDisposeBlocSubjectProviderFamily.scoped(String name)
       : this(
           (ref, arg) {
-            throw UnimplementedProviderError<AutoDisposeBlocProvider<E, S>>(
+            throw UnimplementedProviderError<AutoDisposeBlocSubjectProvider<E, S>>(
               name,
             );
           },
@@ -43,11 +43,11 @@ class AutoDisposeBlocProviderFamily<E, S, Arg>
 
   /// {@macro riverpod.overridewith}
   Override overrideWith(
-    BlocSubject<E,S> Function(AutoDisposeBlocProviderRef<E, S> ref, Arg arg) create,
+    BlocSubject<E,S> Function(AutoDisposeBlocSubjectProviderRef<E, S> ref, Arg arg) create,
   ) {
-    return FamilyOverrideImpl<S, Arg, AutoDisposeBlocProvider<E, S>>(
+    return FamilyOverrideImpl<S, Arg, AutoDisposeBlocSubjectProvider<E, S>>(
       this,
-      (arg) => AutoDisposeBlocProvider<E, S>.internal(
+      (arg) => AutoDisposeBlocSubjectProvider<E, S>.internal(
         (ref) => create(ref, arg),
         from: from,
         argument: arg,

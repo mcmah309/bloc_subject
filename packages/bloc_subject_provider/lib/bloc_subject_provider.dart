@@ -2,10 +2,10 @@
 /// `riverpod` package instead of `provider` package.
 ///
 /// Providers:
-/// - [BlocProvider]
-/// - [AutoDisposeBlocProvider]
-/// - [BlocProviderFamily]
-/// - [AutoDisposeBlocProviderFamily]
+/// - [BlocSubjectProvider]
+/// - [AutoDisposeBlocSubjectProvider]
+/// - [BlocSubjectProviderFamily]
+/// - [AutoDisposeBlocSubjectProviderFamily]
 library bloc_subject_provider;
 
 export 'package:bloc_subject/bloc_subject.dart';

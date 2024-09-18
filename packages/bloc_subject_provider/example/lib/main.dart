@@ -16,8 +16,8 @@ class Event2 implements Event {
   Event2(this.number);
 }
 
-final BlocProvider<Event, int> blocSubjectProvider =
-    BlocProvider((ref) => BlocSubject.fromValue(1, handler: (event, state) {
+final BlocSubjectProvider<Event, int> blocSubjectProvider =
+    BlocSubjectProvider((ref) => BlocSubject.fromValue(1, handler: (event, state) {
           switch (event) {
             case Event1(:final number):
               print("event 1");
