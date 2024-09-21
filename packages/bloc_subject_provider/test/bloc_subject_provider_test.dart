@@ -3,8 +3,8 @@ import 'package:bloc_subject_provider/src/framework.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final BlocSubjectProvider<int, String> blocSubjectProvider =
-    BlocSubjectProvider((ref) =>
-        BlocSubject.fromStream(Stream.value(""), handler: (event, state) {}));
+    BlocSubjectProvider((ref) => BlocSubject.fromStream(Stream.value(""),
+        handler: (event, state) => null));
 
 void main() {
   test('test', () {});

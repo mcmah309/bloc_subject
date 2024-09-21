@@ -20,9 +20,11 @@ final BlocSubjectProvider<Event, int> blocSubjectProvider = BlocSubjectProvider(
     (ref) => BlocSubject.fromValue(1, handler: (event, state) {
           switch (event) {
             case Event1(:final number):
+              // ignore: avoid_print
               print("event 1");
               return state + number;
             case Event2(:final number):
+              // ignore: avoid_print
               print("event 2");
               return state + number;
           }

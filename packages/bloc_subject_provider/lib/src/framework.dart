@@ -1,6 +1,5 @@
 // ignore_for_file: implementation_imports
 import 'package:bloc_subject/bloc_subject.dart';
-import 'package:bloc_subject_provider/bloc_subject_provider.dart';
 import 'package:meta/meta.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:riverpod/src/framework.dart';

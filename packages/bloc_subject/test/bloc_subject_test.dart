@@ -1,4 +1,4 @@
-import '../lib/bloc_subject.dart';
+import 'package:bloc_subject/bloc_subject.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:rxdart/transformers.dart';
