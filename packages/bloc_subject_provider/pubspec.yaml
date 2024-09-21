@@ -5,6 +5,9 @@ repository: https://github.com/mcmah309/bloc_subject
 topics:
   - state-management
   - bloc
+  - rxdart
+  - reactive-programming
+  - streams
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
