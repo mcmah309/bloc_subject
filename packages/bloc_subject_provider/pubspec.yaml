@@ -1,7 +1,10 @@
 name: bloc_subject_provider
 description: Reactive event based state management. Implementation of the Bloc pattern as an rxdart subject (BlocSubject) and a riverpod provider for the new subject (BlocSubjectProvider).
-version: 0.2.0
-repository: https://github.com/mcmah309/bloc_subject/
+version: 0.2.1
+repository: https://github.com/mcmah309/bloc_subject
+topics:
+  - state-management
+  - bloc
 
 environment:
   sdk: '>=3.4.3 <4.0.0'
@@ -11,8 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   riverpod: ^2.3.2
-  bloc_subject: ^0.2.0
-  meta: ^1.0.0
+  bloc_subject: ^0.3.0
 
 dev_dependencies:
   flutter_test:
