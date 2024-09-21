@@ -1,6 +1,7 @@
-## 0.2.1
+## 0.3.1
 
 - Doc Update
+- Align versions with `bloc_subject` package
 
 ## 0.2.0
 
