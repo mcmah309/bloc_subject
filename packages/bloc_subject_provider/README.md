@@ -1,7 +1,7 @@
 [![Pub Version](https://img.shields.io/pub/v/bloc_subject_provider.svg)](https://pub.dev/packages/bloc_subject_provider)
 [![Dart Package Docs](https://img.shields.io/badge/documentation-pub.dev-blue.svg)](https://pub.dev/documentation/bloc_subject_provider/latest/)
-[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue)]
-[![Build Status](https://github.com/mcmah309/bloc_subject_provider/actions/workflows/dart.yml/badge.svg)](https://github.com/mcmah309/bloc_subject_provider/actions)
+[License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue)
+[![Build Status](https://github.com/mcmah309/bloc_subject/actions/workflows/dart.yml/badge.svg)](https://github.com/mcmah309/bloc_subject/actions)
 
 # bloc_subject_provider
 
