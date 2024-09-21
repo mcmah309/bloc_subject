@@ -1,3 +1,7 @@
+## 0.3.1
+
+- Doc Update
+
 ## 0.3.0
 
 - Refinement.
