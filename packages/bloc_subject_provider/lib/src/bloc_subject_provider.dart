@@ -54,7 +54,8 @@ class BlocSubjectProvider<E, S> extends _BlocSubjectProviderBase<E, S>
   }
 
   @override
-  late final AlwaysAliveRefreshable<BlocSubject<E, S>> subject = _notifier(this);
+  late final AlwaysAliveRefreshable<BlocSubject<E, S>> subject =
+      _notifier(this);
 
   /// {@macro riverpod.overridewith}
   Override overrideWith(

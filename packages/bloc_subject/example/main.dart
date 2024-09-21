@@ -28,12 +28,13 @@ class Z implements AlphabetEvent {}
 
 void main() async {
   int emitCount = 0;
-  BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromValue(A(emitCount),
-      handler: (event, state) => switch (event) {
-            X() => A(++emitCount),
-            Y() => B(++emitCount),
-            Z() => null,
-          });
+  BlocSubject<AlphabetEvent, AlphabetState> subject =
+      BlocSubject.fromValue(A(emitCount),
+          handler: (event, state) => switch (event) {
+                X() => A(++emitCount),
+                Y() => B(++emitCount),
+                Z() => null,
+              });
   final transformedStream = subject.stream
       .map((value) => switch (value) {
             A() => "A${value.id}",
@@ -50,7 +51,8 @@ void main() async {
   assert(subject.value is B);
   assert(await transformedStream.first == "B1");
 
-  subject.addEvent(Z()); // If null is emitted from the handler, the state does not change/emit
+  subject.addEvent(
+      Z()); // If null is emitted from the handler, the state does not change/emit
   await Future.delayed(const Duration(milliseconds: 100));
   assert(subject.value is B);
   assert(await transformedStream.first == "B1");
