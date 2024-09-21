@@ -1,3 +1,8 @@
+[![Pub Version](https://img.shields.io/pub/v/bloc_subject_provider.svg)](https://pub.dev/packages/bloc_subject_provider)
+[![Dart Package Docs](https://img.shields.io/badge/documentation-pub.dev-blue.svg)](https://pub.dev/documentation/bloc_subject_provider/latest/)
+[![License: Apache 2.0](https://img.shields.io/github/license/mcmah309/bloc_subject_provider)](https://opensource.org/license/apache-2-0)
+[![Build Status](https://github.com/mcmah309/bloc_subject_provider/actions/workflows/dart.yml/badge.svg)](https://github.com/mcmah309/bloc_subject_provider/actions)
+
 # bloc_subject_provider
 
 Reactive event based state management. Implementation of the Bloc pattern as an rxdart subject (`BlocSubject`) and a riverpod provider for the new subject (`BlocSubjectProvider`).

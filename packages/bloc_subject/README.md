@@ -1,3 +1,8 @@
+[![Pub Version](https://img.shields.io/pub/v/bloc_subject.svg)](https://pub.dev/packages/bloc_subject)
+[![Dart Package Docs](https://img.shields.io/badge/documentation-pub.dev-blue.svg)](https://pub.dev/documentation/bloc_subject/latest/)
+[![License: Apache 2.0](https://img.shields.io/github/license/mcmah309/bloc_subject)](https://opensource.org/license/apache-2-0)
+[![Build Status](https://github.com/mcmah309/bloc_subject/actions/workflows/dart.yml/badge.svg)](https://github.com/mcmah309/bloc_subject/actions)
+
 # bloc_subject
 
 `bloc_subject` is a Dart package that introduces the `BlocSubject` class, an extension of RxDart's `BehaviorSubject` with the powerful `BLoC` (Business Logic Component) pattern. It allows you to handle events and state changes in a reactive way, leveraging RxDart's stream manipulation capabilities while maintaining state and responding to events asynchronously.
