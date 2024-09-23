@@ -151,7 +151,7 @@ bloc_subject:
 import 'package:bloc_subject/bloc_subject.dart';
 
 void main() {
-    final blocSubject = BlocSubject<HomeEvent, HomeState>.fromValue(
+    final blocSubject = BlocSubject<HomeEvent, HomeState>.seeded(
         HomeState(),
         handler: (event, state) => switch (event) {
             HomeEventAddedDocumentInfo() => _handleAddedDocumentInfo(event, state),

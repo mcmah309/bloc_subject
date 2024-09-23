@@ -11,7 +11,7 @@ Reactive event based state management. Implementation of the Bloc pattern as an 
 ```dart
 import 'package:bloc_subject_provider/bloc_subject_provider.dart';
 
-final homeBlocProvider = BlocSubjectProvider<HomeEvent, HomeState>((ref) => BlocSubject.fromValue(
+final homeBlocProvider = BlocSubjectProvider<HomeEvent, HomeState>((ref) => BlocSubject.seeded(
       HomeState(),
       handler: (event, state) => switch (event) {
         HomeEventAddedDocumentInfo() => _handleAddedDocumentInfo(event, state),

@@ -67,7 +67,7 @@ void main() {
 
   // test('Change event handle', () async {
   //   BlocSubject<AlphabetEvent, AlphabetState> subject =
-  //       BlocSubject.fromValue(A(), handler: (event, state) {
+  //       BlocSubject.seeded(A(), handler: (event, state) {
   //     switch (event) {
   //       case X():
   //         return B();
