@@ -23,7 +23,7 @@ class Z implements AlphabetEvent {}
 void main() {
   test('`await` is needed to change state with event', () async {
     BlocSubject<AlphabetEvent, AlphabetState> subject =
-        BlocSubject.fromValue(A(), handler: (event, state) {
+        BlocSubject.seeded(A(), handler: (event, state) {
       switch (event) {
         case X():
           return B();
@@ -47,7 +47,7 @@ void main() {
 
   test('`await` is not needed to change state directly', () async {
     BlocSubject<AlphabetEvent, AlphabetState> subject =
-        BlocSubject.fromValue(A(), handler: (event, state) {
+        BlocSubject.seeded(A(), handler: (event, state) {
       switch (event) {
         case X():
           return B();
@@ -111,21 +111,13 @@ void main() {
     }
 
     BlocSubject<AlphabetEvent, AlphabetState> subject =
-        BlocSubject.fromValue(A(), handler: eventHandler);
+        BlocSubject.seeded(A(), handler: eventHandler);
     expect(subject.value, isA<A>());
     subject.addEvent(X());
     await Future.delayed(const Duration(milliseconds: 100));
     expect(subject.value, isA<C>());
 
-    subject = BlocSubject.fromStream(Stream.value(A()), handler: eventHandler);
-    expect(subject.hasValue, isFalse);
-    await Future.delayed(const Duration(milliseconds: 100));
-    expect(subject.value, isA<A>());
-    subject.addEvent(X());
-    await Future.delayed(const Duration(milliseconds: 100));
-    expect(subject.value, isA<C>());
-
-    subject = BlocSubject.fromBehavior(BehaviorSubject.seeded(A()),
+    subject = BlocSubject.wrap(BehaviorSubject.seeded(A()),
         handler: eventHandler);
     expect(subject.value, isA<A>());
     subject.addEvent(X());
@@ -190,7 +182,7 @@ void main() {
     }
 
     BlocSubject<AlphabetEvent, AlphabetState> subject =
-        BlocSubject.fromValue(B(), handler: eventHandler);
+        BlocSubject.seeded(B(), handler: eventHandler);
     expect(subject.value, isA<B>());
     subject.addEvent(X());
     subject.addEvent(Y());
@@ -203,7 +195,7 @@ void main() {
     expect(last, 7);
     expect(subject.value, isA<C>());
 
-    subject = BlocSubject.fromValue(B(),
+    subject = BlocSubject.seeded(B(),
         handler: eventHandler,
         eventsModifier: (events) => events
             .throttle((_) => TimerStream(null, Duration(milliseconds: 300))));
@@ -224,7 +216,7 @@ void main() {
     expect(subject.value, isA<B>(),
         reason: "Last call in the 'no call' throttle time");
 
-    subject = BlocSubject.fromValue(B(),
+    subject = BlocSubject.seeded(B(),
         handler: eventHandler,
         eventsModifier: (events) => events
             .debounce((_) => TimerStream(null, Duration(milliseconds: 300))));

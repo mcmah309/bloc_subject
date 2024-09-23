@@ -58,25 +58,9 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     return BlocSubject._(behavior, handler, emptyHandler, eventsModifier);
   }
 
-  factory BlocSubject.fromStream(
-    Stream<State> stream, {
-    required Handler<Event, State> handler,
-
-    /// {@macro empty_handler}
-    /// Note, even if this stream already holds a value, you may need to yield for the value to be seen by this Subject.
-    EmptyHandler<Event, State>? emptyHandler,
-    EventsModifier<Event>? eventsModifier,
-    void Function()? onListen,
-    void Function()? onCancel,
-    bool sync = false,
-  }) {
-    final BehaviorSubject<State> behavior =
-        BehaviorSubject(onListen: onListen, onCancel: onCancel, sync: sync);
-    behavior.addStream(stream);
-    return BlocSubject._(behavior, handler, emptyHandler, eventsModifier);
-  }
-
-  factory BlocSubject.fromBehavior(
+  /// Wraps a [BehaviorSubject], using the provided [behavior] as the underlying state. i.e. Changes to  "this"
+  /// [BlocSubject] will effect [behavior].
+  factory BlocSubject.wrap(
     BehaviorSubject<State> behavior, {
     required Handler<Event, State> handler,
 
@@ -88,7 +72,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
     return BlocSubject._(behavior, handler, emptyHandler, eventsModifier);
   }
 
-  factory BlocSubject.fromValue(
+  factory BlocSubject.seeded(
     State val, {
     required Handler<Event, State> handler,
     EventsModifier<Event>? eventsModifier,

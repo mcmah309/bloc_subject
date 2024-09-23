@@ -36,7 +36,7 @@ class Z implements AlphabetEvent {}
 
 void main() async {
   int emitCount = 0;
-  BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.fromValue(A(emitCount),
+  BlocSubject<AlphabetEvent, AlphabetState> subject = BlocSubject.seeded(A(emitCount),
       handler: (event, state) => switch (event) {
             X() => A(++emitCount),
             Y() => B(++emitCount),

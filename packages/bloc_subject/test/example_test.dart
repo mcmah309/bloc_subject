@@ -31,7 +31,7 @@ void main() async {
   test('example test', () async {
     int emitCount = 0;
     BlocSubject<AlphabetEvent, AlphabetState> subject =
-        BlocSubject.fromValue(A(emitCount),
+        BlocSubject.seeded(A(emitCount),
             handler: (event, state) => switch (event) {
                   X() => A(++emitCount),
                   Y() => B(++emitCount),
