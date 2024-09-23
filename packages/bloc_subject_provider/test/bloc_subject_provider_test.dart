@@ -3,7 +3,7 @@ import 'package:bloc_subject_provider/src/framework.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final BlocSubjectProvider<int, String> blocSubjectProvider =
-    BlocSubjectProvider((ref) => BlocSubject.wrapped("",
+    BlocSubjectProvider((ref) => BlocSubject.seeded("",
         handler: (event, state) => null));
 
 void main() {
