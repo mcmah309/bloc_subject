@@ -117,7 +117,7 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 100));
     expect(subject.value, isA<C>());
 
-    subject = BlocSubject.wrap(BehaviorSubject.seeded(A()),
+    subject = BlocSubject.wrapped(BehaviorSubject.seeded(A()),
         handler: eventHandler);
     expect(subject.value, isA<A>());
     subject.addEvent(X());

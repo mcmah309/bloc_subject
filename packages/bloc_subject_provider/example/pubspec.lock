@@ -13,17 +13,17 @@ packages:
     dependency: transitive
     description:
       name: bloc_subject
-      sha256: b12f0206a503d281ecc9f69f45eee984cfe7574be3aa1ae3da4d1977c6b1834c
+      sha256: "6d1316d8fa2a3a59e6ba5bd8afa65ecf284e756c2d7325dbe57715d27ac0bcf3"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0"
+    version: "0.4.0"
   bloc_subject_provider:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.1.0"
+    version: "0.3.2"
   boolean_selector:
     dependency: transitive
     description:

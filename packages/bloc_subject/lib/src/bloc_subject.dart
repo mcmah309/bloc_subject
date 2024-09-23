@@ -60,7 +60,7 @@ class BlocSubject<Event, State> implements BehaviorSubject<State> {
 
   /// Wraps a [BehaviorSubject], using the provided [behavior] as the underlying state. i.e. Changes to  "this"
   /// [BlocSubject] will effect [behavior].
-  factory BlocSubject.wrap(
+  factory BlocSubject.wrapped(
     BehaviorSubject<State> behavior, {
     required Handler<Event, State> handler,
 
